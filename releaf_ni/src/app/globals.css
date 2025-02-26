@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .navbar-main {
+    @apply bg-white;
+  }
+  .navbar-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .navbar-content {
+    @apply flex justify-between h-16;
+  }
+  .navbar-logo {
+    @apply flex-shrink-0 flex items-center;
+  }
+  .logo-text {
+    @apply text-3xl font-bold text-gray-800; /* Increased from text-2xl to text-3xl */
+  }
+  .navbar-links-container {
+    @apply flex;
+  }
+  .navbar-links {
+    @apply hidden sm:ml-6 sm:flex sm:space-x-8;
+  }
+  .nav-link {
+    @apply inline-flex items-center px-1 pt-1 text-lg font-medium text-gray-700 hover:text-gray-900; /* Increased from text-sm to text-lg */
+  }
+  .nav-link-text {
+    @apply relative;
+  }
+  .nav-link-text::after {
+    content: "";
+    @apply absolute left-0 bottom-0 w-0 h-0.5 bg-green-500 transition-all duration-300 ease-in-out;
+  }
+  .nav-link:hover .nav-link-text::after {
+    @apply w-full;
+  }
+  .main-content {
+    @apply flex min-h-screen flex-col items-center justify-between p-24;
+  }
+  .page-title {
+    @apply text-4xl font-bold;
+  }
+  .footer-main {
+    @apply bg-gray-100 pt-8 pb-4; /* Reduced padding */
+  }
+  .footer-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .footer-content {
+    @apply space-y-6; /* Reduced spacing */
+  }
+  .footer-sections {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6; /* Reduced gap */
+  }
+  .footer-section {
+    @apply space-y-2; /* Reduced spacing */
+  }
+  .footer-section-title {
+    @apply text-xs font-semibold text-gray-400 uppercase tracking-wider; /* Reduced from text-sm to text-xs */
+  }
+  .footer-links {
+    @apply space-y-1; /* Reduced spacing */
+  }
+  .footer-links li a {
+    @apply text-sm text-gray-500 hover:text-gray-900; /* Reduced from text-base to text-sm */
+  }
+  .footer-bottom {
+    @apply flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0; /* Reduced spacing */
+  }
+  .newsletter-signup {
+    @apply w-full md:w-1/2;
+  }
+  .newsletter-title {
+    @apply text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1; /* Reduced from text-sm to text-xs and reduced margin */
+  }
+  .newsletter-form {
+    @apply flex;
+  }
+  .newsletter-input {
+    @apply flex-grow px-3 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500; /* Reduced padding and font size */
+  }
+  .newsletter-button {
+    @apply px-3 py-1 text-sm bg-green-500 text-white rounded-r-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500; /* Reduced padding and font size */
+  }
+  .social-links {
+    @apply flex space-x-3; /* Reduced spacing */
+  }
+  .social-link {
+    @apply text-gray-400 hover:text-green-500 transition-colors duration-200;
+  }
+  .social-icon {
+    @apply w-5 h-5; /* Reduced from w-6 h-6 to w-5 h-5 */
+  }
+  .copyright {
+    @apply text-center text-xs text-gray-500 mt-6; /* Reduced from text-sm to text-xs and reduced margin */
+  }
+}

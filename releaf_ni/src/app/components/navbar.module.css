@@ -1,0 +1,16 @@
+.navbar-logo {
+    display: flex;
+    align-items: center;
+  }
+  
+.navbar-logo img {
+width: 40px; /* Adjust the width as needed */
+height: auto; /* Maintain aspect ratio */
+}
+
+.navbar-title {
+margin-left: 10px; /* Adjust the margin as needed */
+font-size: 1.5rem; /* Adjust the font size as needed */
+font-weight: bold;
+color: #333; /* Adjust the color as needed */
+}
