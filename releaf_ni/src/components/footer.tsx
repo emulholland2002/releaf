@@ -99,7 +99,7 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-          <p className="copyright">&copy; {new Date().getFullYear()} My Next.js App. All rights reserved.</p>
+          <p className="copyright">&copy; {new Date().getFullYear()} Releaf NI. All rights reserved.</p>
         </div>
       </div>
     </footer>

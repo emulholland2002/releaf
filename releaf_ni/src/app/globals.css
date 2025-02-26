@@ -4,7 +4,7 @@
 
 @layer components {
   .navbar-main {
-    @apply bg-white;
+    @apply bg-white fixed top-0 w-full;
   }
   .navbar-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
@@ -16,7 +16,7 @@
     @apply flex-shrink-0 flex items-center;
   }
   .logo-text {
-    @apply text-3xl font-bold text-gray-800; /* Increased from text-2xl to text-3xl */
+    @apply text-3xl font-bold text-gray-800; 
   }
   .navbar-links-container {
     @apply flex;
@@ -25,7 +25,7 @@
     @apply hidden sm:ml-6 sm:flex sm:space-x-8;
   }
   .nav-link {
-    @apply inline-flex items-center px-1 pt-1 text-lg font-medium text-gray-700 hover:text-gray-900; /* Increased from text-sm to text-lg */
+    @apply inline-flex items-center px-1 pt-1 text-lg font-medium text-gray-700 hover:text-gray-900; 
   }
   .nav-link-text {
     @apply relative;
@@ -44,57 +44,57 @@
     @apply text-4xl font-bold;
   }
   .footer-main {
-    @apply bg-gray-100 pt-8 pb-4; /* Reduced padding */
+    @apply bg-gray-100 pt-8 pb-4; 
   }
   .footer-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   .footer-content {
-    @apply space-y-6; /* Reduced spacing */
+    @apply space-y-6; 
   }
   .footer-sections {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6; /* Reduced gap */
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6; 
   }
   .footer-section {
-    @apply space-y-2; /* Reduced spacing */
+    @apply space-y-2; 
   }
   .footer-section-title {
-    @apply text-xs font-semibold text-gray-400 uppercase tracking-wider; /* Reduced from text-sm to text-xs */
+    @apply text-xs font-semibold text-gray-400 uppercase tracking-wider; 
   }
   .footer-links {
-    @apply space-y-1; /* Reduced spacing */
+    @apply space-y-1; 
   }
   .footer-links li a {
-    @apply text-sm text-gray-500 hover:text-gray-900; /* Reduced from text-base to text-sm */
+    @apply text-sm text-gray-500 hover:text-gray-900;
   }
   .footer-bottom {
-    @apply flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0; /* Reduced spacing */
+    @apply flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0; 
   }
   .newsletter-signup {
     @apply w-full md:w-1/2;
   }
   .newsletter-title {
-    @apply text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1; /* Reduced from text-sm to text-xs and reduced margin */
+    @apply text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1; 
   }
   .newsletter-form {
     @apply flex;
   }
   .newsletter-input {
-    @apply flex-grow px-3 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500; /* Reduced padding and font size */
+    @apply flex-grow px-3 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500; 
   }
   .newsletter-button {
-    @apply px-3 py-1 text-sm bg-green-500 text-white rounded-r-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500; /* Reduced padding and font size */
+    @apply px-3 py-1 text-sm bg-green-500 text-white rounded-r-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500;
   }
   .social-links {
-    @apply flex space-x-3; /* Reduced spacing */
+    @apply flex space-x-3; 
   }
   .social-link {
     @apply text-gray-400 hover:text-green-500 transition-colors duration-200;
   }
   .social-icon {
-    @apply w-5 h-5; /* Reduced from w-6 h-6 to w-5 h-5 */
+    @apply w-5 h-5; 
   }
   .copyright {
-    @apply text-center text-xs text-gray-500 mt-6; /* Reduced from text-sm to text-xs and reduced margin */
+    @apply text-center text-xs text-gray-500 mt-6; 
   }
 }
