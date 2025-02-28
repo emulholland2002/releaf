@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation'
 import Link from "next/link"
 import React from "react"
-import styles from "./navbar.module.css"
 
 const NavBar = () => {
     const pathname = usePathname();
@@ -12,12 +11,16 @@ const NavBar = () => {
         <nav className="navbar-main">
         <div className="navbar-container">
             <div className="navbar-content">
-                <div className={styles['navbar-logo']}>
-                    <Link href="/">
-                        <img src="../favicon.ico" alt="Logo" />
-                    </Link>
-                    <div className={styles['navbar-title']}>
-                        <Link href="/">Releaf NI</Link>
+                <div className="navbar-brand">
+                    <div className='navbar-logo'>
+                        <Link href="/">
+                            <img src="../favicon.ico" alt="Logo" />
+                        </Link>
+                    </div>
+                    <div className="navbar-title">
+                        <Link href="/">
+                            <h1>Releaf NI</h1>
+                        </Link>
                     </div>
                 </div>
             <div className="navbar-links-container">

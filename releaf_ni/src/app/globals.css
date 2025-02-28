@@ -12,11 +12,14 @@
   .navbar-content {
     @apply flex justify-between h-16;
   }
-  .navbar-logo {
-    @apply flex-shrink-0 flex items-center;
+  .navbar-brand {
+    @apply flex items-center pt-2 ;
   }
-  .logo-text {
-    @apply text-3xl font-bold text-gray-800; 
+  .navbar-logo {
+    @apply flex-shrink-0 justify-start w-12 h-12;
+  }
+ .navbar-title {
+    @apply text-lg text-lg ml-4;
   }
   .navbar-links-container {
     @apply flex;
