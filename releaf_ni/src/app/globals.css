@@ -19,7 +19,7 @@
     @apply flex-shrink-0 justify-start w-12 h-12;
   }
  .navbar-title {
-    @apply text-lg text-lg ml-4;
+    @apply  ml-4 text-xl font-bold text-gray-700 hover:text-gray-900;
   }
   .navbar-links-container {
     @apply flex;
@@ -37,8 +37,12 @@
     content: "";
     @apply absolute left-0 bottom-0 w-0 h-0.5 bg-green-500 transition-all duration-300 ease-in-out;
   }
-  .nav-link:hover .nav-link-text::after {
+  .nav-link:hover .nav-link-text::after,
+  .nav-link.active .nav-link-text::after {
     @apply w-full;
+  }
+  .nav-link.active {
+    @apply text-gray-900;
   }
   .main-content {
     @apply flex min-h-screen flex-col items-center justify-between p-24;

@@ -42,7 +42,7 @@ const NavBar = () => {
 
 const NavLink = ({ href, text, isActive }: { href: string; text: string; isActive: boolean}) => {
     return (
-    <Link href={href} className={'nav-link'}>
+    <Link href={href} className={`nav-link${isActive ? ' active' : ''}`}>
       <span className="nav-link-text">{text}</span>
     </Link>
   )
