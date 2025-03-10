@@ -1,42 +1,36 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
-import "./globals.css";
-import React from "react";
-import NavBar from "../components/navbar";
-import Footer from "../components/footer";
+import type React from "react"
+import "./globals.css"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer"
+import { AuthProvider } from "@/context/auth-context"
+import { getCurrentUser } from "./actions/auth"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Releaf NI",
-  description: "Saving NI one tree at a time",
-};
+  title: "Releaf",
+  description: "Making a difference, one tree at a time",
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const user = await getCurrentUser()
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavBar />
-        <div className="min-h-screen">{children}</div>
-        <Footer />
+        <AuthProvider initialUser={user}>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   )
 }
+
