@@ -38,8 +38,8 @@ export function SignupForm() {
         throw new Error(data.message || "Something went wrong")
       }
 
-      // Redirect to login page after successful signup
-      router.push("/login?registered=true")
+      // Redirect to sigin page after successful signup
+      router.push("/sigin?registered=true")
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to create account")
       setIsLoading(false)
@@ -90,7 +90,7 @@ export function SignupForm() {
           </Button>
           <div className="text-center text-sm">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href="/signin" className="text-primary hover:underline">
               Sign in
             </Link>
           </div>
