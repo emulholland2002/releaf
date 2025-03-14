@@ -39,7 +39,7 @@ export function SignupForm() {
       }
 
       // Redirect to sigin page after successful signup
-      router.push("/sigin?registered=true")
+      router.push("/signin?registered=true")
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to create account")
       setIsLoading(false)

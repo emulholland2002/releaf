@@ -31,7 +31,7 @@ const NavBar = () => {
                 <NavLink href="/grants" text="Grants" isActive={pathname === "/grants"} />
                 <NavLink href="/map" text="Map" isActive={pathname === "/map"} />
                 <NavLink href="/learn" text="Learn" isActive={pathname === "/learn"} />
-                <NavLink href="/sign_in" text="Sign In" isActive={pathname === "/sign_in"} />
+                <NavLink href="/signin" text="Sign In" isActive={pathname === "/signin"} />
                 </div>
             </div>
             </div>

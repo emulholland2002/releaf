@@ -34,9 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavBar />
-        <AuthProvider>{children}</AuthProvider>
-        <Footer />
+          <NavBar />
+          <AuthProvider>{children}</AuthProvider>
+          <Footer />
       </body>
     </html>
   )
