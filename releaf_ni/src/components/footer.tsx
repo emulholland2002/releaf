@@ -1,109 +1,54 @@
-import React from "react"
-import { Facebook, Instagram, Twitter } from "lucide-react"
 import Link from "next/link"
+import { Github, Facebook, Twitter, Instagram } from "lucide-react"
 
-const Footer = () => {
+import { Button } from "@/components/ui/button"
+
+export function Footer() {
   return (
-    <footer className="footer-main">
-      <div className="footer-container">
-        <div className="footer-content">
-          <div className="footer-sections">
-            <div className="footer-section">
-              <h3 className="footer-section-title">Company</h3>
-              <ul className="footer-links">
-                <li>
-                  <Link href="/about">About Us</Link>
-                </li>
-                <li>
-                  <Link href="/careers">Careers</Link>
-                </li>
-                <li>
-                  <Link href="/press">Press</Link>
-                </li>
-                <li>
-                  <Link href="/blog">Blog</Link>
-                </li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h3 className="footer-section-title">Products</h3>
-              <ul className="footer-links">
-                <li>
-                  <Link href="/products">Our Products</Link>
-                </li>
-                <li>
-                  <Link href="/pricing">Pricing</Link>
-                </li>
-                <li>
-                  <Link href="/features">Features</Link>
-                </li>
-                <li>
-                  <Link href="/roadmap">Roadmap</Link>
-                </li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h3 className="footer-section-title">Resources</h3>
-              <ul className="footer-links">
-                <li>
-                  <Link href="/docs">Documentation</Link>
-                </li>
-                <li>
-                  <Link href="/support">Support</Link>
-                </li>
-                <li>
-                  <Link href="/faq">FAQ</Link>
-                </li>
-                <li>
-                  <Link href="/api">API</Link>
-                </li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h3 className="footer-section-title">Legal</h3>
-              <ul className="footer-links">
-                <li>
-                  <Link href="/privacy">Privacy Policy</Link>
-                </li>
-                <li>
-                  <Link href="/terms">Terms of Service</Link>
-                </li>
-                <li>
-                  <Link href="/cookies">Cookie Policy</Link>
-                </li>
-                <li>
-                  <Link href="/compliance">Compliance</Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <div className="newsletter-signup">
-              <h3 className="newsletter-title">Subscribe to our newsletter</h3>
-              <form className="newsletter-form">
-                <input type="email" placeholder="Enter your email" className="newsletter-input" />
-                <button type="submit" className="newsletter-button">
-                  Subscribe
-                </button>
-              </form>
-            </div>
-            <div className="social-links">
-              <Link href="https://twitter.com" className="social-link">
-                <Twitter className="social-icon" />
-              </Link>
-              <Link href="https://facebook.com" className="social-link">
-                <Facebook className="social-icon" />
-              </Link>
-              <Link href="https://instagram.com" className="social-link">
-                <Instagram className="social-icon" />
-              </Link>
-            </div>
-          </div>
-          <p className="copyright">&copy; {new Date().getFullYear()} Releaf NI. All rights reserved.</p>
+    <footer className="border-t py-6 md:py-8">
+      <div className="flex flex-col items-center text-center">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-4">
+          <Link href="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500">
+            About
+          </Link>
+          <Link href="/faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500">
+            FAQ
+          </Link>
+          <Link href="/privacy-policy" className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500">
+            Privacy Policy
+          </Link>
         </div>
+
+        <div className="flex justify-center gap-4 mb-4">
+          <Button variant="ghost" size="icon" asChild className="relative h-9 w-9 p-0 hover:bg-green-300/20 transition-colors duration-200">
+            <Link href="https://github.com" target="_blank" rel="noreferrer">
+              <Github className="h-4 w-4" />
+              <span className="sr-only">GitHub</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild className="relative h-9 w-9 p-0 hover:bg-green-300/20 transition-colors duration-200">
+            <Link href="https://facebook.com" target="_blank" rel="noreferrer">
+              <Facebook className="h-4 w-4" />
+              <span className="sr-only">Facebook</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild className="relative h-9 w-9 p-0 hover:bg-green-300/20 transition-colors duration-200">
+            <Link href="https://twitter.com" target="_blank" rel="noreferrer">
+              <Twitter className="h-4 w-4" />
+              <span className="sr-only">X (Twitter)</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild className="relative h-9 w-9 p-0 hover:bg-green-300/20 transition-colors duration-200">
+            <Link href="https://instagram.com" target="_blank" rel="noreferrer">
+              <Instagram className="h-4 w-4" />
+              <span className="sr-only">Instagram</span>
+            </Link>
+          </Button>
+        </div>
+
+        <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Your Company. All rights reserved.</p>
       </div>
     </footer>
   )
 }
 
-export default Footer

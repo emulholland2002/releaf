@@ -1,50 +1,101 @@
 'use client'
- 
-import { usePathname } from 'next/navigation'
+
+import { signIn, signOut, useSession } from "next-auth/react"
+import { UserCircle, LogOut, Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import React from "react"
+import { useState } from "react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 const NavBar = () => {
-    const pathname = usePathname();
+    const navItems = [ 
+        { title: "Home", href: "/" },
+        { title: "Donate", href: "/donate" },
+        { title: "Grants", href: "/grants" },
+        { title: "Learn", href: "/learn" },
+        { title: "Projects", href: "/projects-news" },
+        { title: "Map", href: "/map" }
+    ]
+
+    const { data: session, status } = useSession()
+    const isLoading = status === "loading"
 
     return (
-        <nav className="navbar-main">
-        <div className="navbar-container">
-            <div className="navbar-content">
-                <div className="navbar-brand">
-                    <div className='navbar-logo'>
-                        <Link href="/">
-                            <img src="../favicon.ico" alt="Logo" />
-                        </Link>
-                    </div>
-                    <div className="navbar-title">
-                        <Link href="/">
-                            <h1>Releaf NI</h1>
-                        </Link>
-                    </div>
-                </div>
-            <div className="navbar-links-container">
-                <div className="navbar-links">
-                <NavLink href="/" text="Home" isActive={pathname === "/"} />
-                <NavLink href="/donate" text="Donate" isActive={pathname === "/donate"} />
-                <NavLink href="/projects_news" text="Projects" isActive={pathname === "/projects_news"} />
-                <NavLink href="/grants" text="Grants" isActive={pathname === "/grants"} />
-                <NavLink href="/map" text="Map" isActive={pathname === "/map"} />
-                <NavLink href="/learn" text="Learn" isActive={pathname === "/learn"} />
-                <NavLink href="/sign_in" text="Sign In" isActive={pathname === "/sign_in"} />
-                </div>
+        <header className="sticky top-0 z-40 w-full border-b bg-background">
+          <div className="flex h-16 items-center justify-between px-4 sm:px-8">
+            <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center space-x-2">
+                <img src="/favicon.ico" alt="Releaf NI" className="h-8 w-8" />
+                <span className="text-xl font-bold">Releaf NI</span>
+              </Link>
             </div>
-            </div>
+    
+            {/* Navigation */}
+            <nav className="flex gap-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500"
+                >
+                  {item.title}
+                </Link>
+              ))}
+            </nav>
+    
+        {/* Authentication UI */}
+        <div className="flex items-center">
+          {isLoading ? (
+            <div className="h-9 w-20 rounded-md bg-muted animate-pulse" />
+          ) : session ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:bg-green-300/20 transition-colors duration-200">
+                  {session.user?.image ? (
+                    <img
+                      src={session.user.image || "/placeholder.svg"}
+                      alt={session.user.name || "User profile"}
+                      className="h-9 w-9 rounded-full"
+                    />
+                  ) : (
+                    <UserCircle className="h-6 w-6" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{session.user?.name || "User"}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()} className="text-red-500 focus:text-red-500">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild className="bg-black hover:bg-green-500">
+              <Link href="#" onClick={() => signIn()} className="transition-colors text-white">
+                Sign In
+              </Link>
+            </Button>
+          )}
         </div>
-        </nav>
-    )
-}
-
-const NavLink = ({ href, text, isActive }: { href: string; text: string; isActive: boolean}) => {
-    return (
-    <Link href={href} className={`nav-link${isActive ? ' active' : ''}`}>
-      <span className="nav-link-text">{text}</span>
-    </Link>
+      </div>
+    </header>
   )
 }
 
