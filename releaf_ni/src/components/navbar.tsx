@@ -13,7 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 const NavBar = () => {
     const navItems = [ 
@@ -39,17 +38,17 @@ const NavBar = () => {
             </div>
     
             {/* Navigation */}
-            <nav className="flex gap-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500"
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </nav>
+              <nav className="flex items-center gap-6">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500"
+                  >
+                    {item.title}
+                  </Link>
+                ))}
+              </nav>
     
         {/* Authentication UI */}
         <div className="flex items-center">
