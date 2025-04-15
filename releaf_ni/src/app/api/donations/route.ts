@@ -1,55 +1,42 @@
-import { type NextRequest, NextResponse } from "next/server"
+// app/api/donations/route.ts
+import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
 import { PrismaClient } from "@prisma/client"
 
+// Create a new PrismaClient instance
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function POST(request: Request) {
   try {
-    const donations = await prisma.donation.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        id: true,
-        name: true,
-        amount: true,
-        message: true,
-        createdAt: true,
-        status: true,
-      },
-    })
-
-    return NextResponse.json({ donations })
-  } catch (error) {
-    console.error("Failed to fetch donations:", error)
-    return NextResponse.json({ error: "Failed to fetch donations" }, { status: 500 })
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { name, email, amount, message } = body
+    // Get session
+    const session = await getServerSession()
+    
+    const data = await request.json()
 
     // Validate required fields
-    if (!name || !email || !amount) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    if (!data.name || !data.email || !data.amount) {
+      return NextResponse.json(
+        { error: "Missing required fields: name, email, and amount are required" },
+        { status: 400 },
+      )
     }
 
-    // Create donation in database
+    // Create donation record
     const donation = await prisma.donation.create({
       data: {
-        name,
-        email,
-        amount: Number.parseFloat(amount),
-        message: message || "",
-        status: "completed",
+        name: data.name,
+        email: data.email,
+        amount: data.amount,
+        message: data.message,
+        status: "pending",
+        // Link to user if logged in (using email to connect)
+        ...(session?.user?.email ? { user: { connect: { email: session.user.email } } } : {}),
       },
     })
 
     return NextResponse.json({ success: true, donation }, { status: 201 })
   } catch (error) {
-    console.error("Failed to create donation:", error)
-    return NextResponse.json({ error: "Failed to create donation" }, { status: 500 })
+    console.error("Error creating donation:", error)
+    return NextResponse.json({ error: "An error occurred while processing your donation" }, { status: 500 })
   }
 }

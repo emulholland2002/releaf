@@ -20,10 +20,13 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  donations Donation[]
 }
 
 model Donation {
   id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
   name      String
   email     String
   amount    Float
@@ -31,4 +34,22 @@ model Donation {
   status    String   @default("pending") // pending, completed, failed
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model UserEvent {
+  userId   String
+  eventId  String
+  addedAt  DateTime @default(now())
+
+  user     User   @relation(fields: [userId], references: [id])
+  event    Event  @relation(fields: [eventId], references: [id]) 
+
+  @@id([userId, eventId]) // composite key
+}
+
+model Event {
+  id        String       @id @default(cuid())
+  title     String
+  date      DateTime
+  attendees UserEvent[]
 }
