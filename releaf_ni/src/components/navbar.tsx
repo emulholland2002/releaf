@@ -86,7 +86,7 @@ const NavBar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild className="bg-black hover:bg-green-500">
+            <Button asChild className="bg-green-600 hover:bg-green-700">
               <Link href="#" onClick={() => signIn()} className="transition-colors text-white">
                 Sign In
               </Link>

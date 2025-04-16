@@ -80,7 +80,11 @@ export default function DonationForm() {
       })
 
       if (response.ok) {
-        router.push("/donate/thank-you")
+        // Create the full name from firstName and lastName
+        const fullName = `${formData.firstName} ${formData.lastName}`
+        // Get the final amount (either custom or selected)
+        const finalAmount = donationAmount === "custom" ? customAmount : donationAmount
+        router.push(`/donate/thank-you?name=${encodeURIComponent(fullName)}&amount=${encodeURIComponent(finalAmount)}`)
       } else {
         const errorData = await response.json().catch(() => ({}))
         console.error("Donation submission failed", errorData)

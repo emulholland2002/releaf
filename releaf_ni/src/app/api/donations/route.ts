@@ -1,10 +1,42 @@
-// app/api/donations/route.ts
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { PrismaClient } from "@prisma/client"
 
 // Create a new PrismaClient instance
 const prisma = new PrismaClient()
+
+export async function GET() {
+  try {
+    // Get session
+    const session = await getServerSession()
+    const userEmail = session?.user?.email
+
+    // Get all events
+    const events = await prisma.event.findMany({
+      orderBy: {
+        date: "asc",
+      },
+    })
+
+    // Get user's events if logged in
+    let userEvents = []
+    if (userEmail) {
+      const user = await prisma.user.findUnique({
+        where: { email: userEmail },
+        include: {
+          userEvents: true,
+        },
+      })
+      
+      userEvents = user?.userEvents || []
+    }
+
+    return NextResponse.json({ events, userEvents })
+  } catch (error) {
+    console.error("Error fetching events:", error)
+    return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 })
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -14,29 +46,40 @@ export async function POST(request: Request) {
     const data = await request.json()
 
     // Validate required fields
-    if (!data.name || !data.email || !data.amount) {
+    if (!data.title || !data.date) {
       return NextResponse.json(
-        { error: "Missing required fields: name, email, and amount are required" },
+        { error: "Missing required fields: title and date are required" },
         { status: 400 },
       )
     }
 
-    // Create donation record
-    const donation = await prisma.donation.create({
+    // Create event record
+    const event = await prisma.event.create({
       data: {
-        name: data.name,
-        email: data.email,
-        amount: data.amount,
-        message: data.message,
-        status: "pending",
-        // Link to user if logged in (using email to connect)
-        ...(session?.user?.email ? { user: { connect: { email: session.user.email } } } : {}),
+        title: data.title,
+        date: new Date(data.date),
       },
     })
 
-    return NextResponse.json({ success: true, donation }, { status: 201 })
+    // If user is logged in, automatically add this event to their calendar
+    if (session?.user?.email) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+      })
+      
+      if (user) {
+        await prisma.userEvent.create({
+          data: {
+            userId: user.id,
+            eventId: event.id,
+          },
+        })
+      }
+    }
+
+    return NextResponse.json({ success: true, event }, { status: 201 })
   } catch (error) {
-    console.error("Error creating donation:", error)
-    return NextResponse.json({ error: "An error occurred while processing your donation" }, { status: 500 })
+    console.error("Error creating event:", error)
+    return NextResponse.json({ error: "An error occurred while creating the event" }, { status: 500 })
   }
 }

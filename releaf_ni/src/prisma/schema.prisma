@@ -21,6 +21,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   donations Donation[]
+  userEvents UserEvent[]
 }
 
 model Donation {
@@ -40,16 +41,14 @@ model UserEvent {
   userId   String
   eventId  String
   addedAt  DateTime @default(now())
-
   user     User   @relation(fields: [userId], references: [id])
   event    Event  @relation(fields: [eventId], references: [id]) 
-
-  @@id([userId, eventId]) // composite key
+  @@id([userId, eventId])
 }
 
 model Event {
   id        String       @id @default(cuid())
   title     String
   date      DateTime
-  attendees UserEvent[]
+  userEvents  UserEvent[]
 }

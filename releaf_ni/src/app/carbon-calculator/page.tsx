@@ -43,12 +43,12 @@ export default function CarbonCalculator() {
   }
 
   const calculateFootprint = () => {
-    // Simple calculation model (would be more complex in a real app)
+    // Simple calculation model 
     const transportation = formData.carMiles * 0.35 + formData.publicTransportMiles * 0.15 + formData.flightHours * 90
 
-    const home = (formData.electricityUsage * 0.5 + formData.gasUsage * 0.2) / Math.max(1, formData.householdSize)
+    const home = (formData.electricityUsage * 0.191 + formData.gasUsage * 0.203) / Math.max(1, formData.householdSize)
 
-    const food = formData.meatConsumption * 50 + formData.dairyConsumption * 20 - formData.localFoodPercentage * 0.3
+    const food = formData.meatConsumption * 50 + formData.dairyConsumption * 1.13 - formData.localFoodPercentage * 0.3
 
     const total = transportation + home + food
 
@@ -123,7 +123,7 @@ export default function CarbonCalculator() {
             <TabsContent value="home">
               <CardHeader>
                 <CardTitle>Home Energy</CardTitle>
-                <CardDescription>Tell us about your home energy usage.</CardDescription>
+                <CardDescription>Tell us about your home energy usage per household.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -138,7 +138,7 @@ export default function CarbonCalculator() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="gasUsage">Gas usage (therms per month)</Label>
+                  <Label htmlFor="gasUsage">Gas usage (kWh per month)</Label>
                   <Input
                     id="gasUsage"
                     name="gasUsage"
@@ -170,7 +170,7 @@ export default function CarbonCalculator() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="meatConsumption">Meat meals per week</Label>
+                  <Label htmlFor="meatConsumption">Red meat meals per week</Label>
                   <Input
                     id="meatConsumption"
                     name="meatConsumption"

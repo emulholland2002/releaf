@@ -85,7 +85,7 @@ export function SignupForm() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Create account"}
           </Button>
           <div className="text-center text-sm">
