@@ -255,11 +255,18 @@ function ActivityItem({ activity }: { activity: Activity }) {
   }
 
   return (
-    <div className="flex items-center space-x-4 rounded-md border p-3">
+    <div
+      className={`flex items-center space-x-4 rounded-md border p-3 ${activity.type === "Donation" ? "bg-gray-100" : ""}`}
+    >
       <div className="flex-shrink-0">{getEventIcon(activity.type)}</div>
       <div className="flex-1 space-y-1">
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium">{activity.type}</p>
+          {activity.type === "Donation" && (
+            <Badge className="bg-green-300 text-gray-800" variant="outline">
+              Donation
+            </Badge>
+          )}
           {activity.eventType && (
             <Badge className={activity.eventColor || "bg-gray-100 text-gray-800"} variant="outline">
               {activity.eventType}
@@ -283,7 +290,11 @@ function ActivityItem({ activity }: { activity: Activity }) {
         <p className="text-xs text-muted-foreground">{activity.description}</p>
       </div>
       <div className="text-right">
-        {activity.amount && <p className="text-sm font-medium">£{activity.amount}</p>}
+        {activity.amount && (
+          <p className={`text-sm font-medium ${activity.type === "Donation" ? "text-gray-800" : ""}`}>
+            £{activity.amount}
+          </p>
+        )}
         <p className="text-xs text-muted-foreground">{formattedDate}</p>
       </div>
     </div>
