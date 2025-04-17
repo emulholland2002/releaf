@@ -1,10 +1,9 @@
-'use client'
+"use client"
 
 import { signIn, signOut, useSession } from "next-auth/react"
-import { UserCircle, LogOut, Menu } from "lucide-react"
+import { UserCircle, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { useState } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,44 +12,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 const NavBar = () => {
-    const navItems = [ 
-        { title: "Home", href: "/" },
-        { title: "Donate", href: "/donate" },
-        { title: "Grants", href: "/grants" },
-        { title: "Learn", href: "/learn" },
-        { title: "Projects", href: "/projects-news" },
-        { title: "Map", href: "/map" }
-    ]
+  const navItems = [
+    { title: "Home", href: "/" },
+    { title: "Donate", href: "/donate" },
+    { title: "Grants", href: "/grants" },
+    { title: "Learn", href: "/learn" },
+    { title: "Projects", href: "/projects" },
+    { title: "Map", href: "/map" },
+  ]
 
-    const { data: session, status } = useSession()
-    const isLoading = status === "loading"
+  const { data: session, status } = useSession()
+  const isLoading = status === "loading"
 
-    return (
-        <header className="sticky top-0 z-40 w-full border-b bg-background">
-          <div className="flex h-16 items-center justify-between px-4 sm:px-8">
-            <div className="flex items-center gap-2">
-              <Link href="/" className="flex items-center space-x-2">
-                <img src="/favicon.ico" alt="Releaf NI" className="h-8 w-8" />
-                <span className="text-xl font-bold">Releaf NI</span>
-              </Link>
-            </div>
-    
-            {/* Navigation */}
-            <nav className="flex gap-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500"
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </nav>
-    
+  return (
+    <header className="sticky top-0 z-[1001] w-full border-b bg-background">
+      <div className="flex h-16 items-center justify-between px-4 sm:px-8">
+        <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center space-x-2">
+            <img src="/favicon.ico" alt="Releaf NI" className="h-8 w-8" />
+            <span className="text-xl font-bold">Releaf NI</span>
+          </Link>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex items-center gap-6">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-green-500"
+            >
+              {item.title}
+            </Link>
+          ))}
+        </nav>
+
         {/* Authentication UI */}
         <div className="flex items-center">
           {isLoading ? (
@@ -58,7 +56,10 @@ const NavBar = () => {
           ) : session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:bg-green-300/20 transition-colors duration-200">
+                <Button
+                  variant="ghost"
+                  className="relative h-9 w-9 rounded-full p-0 hover:bg-green-300/20 transition-colors duration-200"
+                >
                   {session.user?.image ? (
                     <img
                       src={session.user.image || "/placeholder.svg"}
@@ -70,7 +71,7 @@ const NavBar = () => {
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="z-[1002]">
                 <DropdownMenuLabel>{session.user?.name || "User"}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
@@ -87,7 +88,7 @@ const NavBar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild className="bg-black hover:bg-green-500">
+            <Button asChild className="bg-green-600 hover:bg-green-700">
               <Link href="#" onClick={() => signIn()} className="transition-colors text-white">
                 Sign In
               </Link>
