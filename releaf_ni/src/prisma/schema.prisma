@@ -22,6 +22,7 @@ model User {
   updatedAt DateTime @updatedAt
   donations Donation[]
   userEvents UserEvent[]
+  createdEvents Event[] // Events created by this user
 }
 
 model Donation {
@@ -41,14 +42,35 @@ model UserEvent {
   userId   String
   eventId  String
   addedAt  DateTime @default(now())
-  user     User   @relation(fields: [userId], references: [id])
-  event    Event  @relation(fields: [eventId], references: [id]) 
+  status   String   @default("attending") // attending, interested, declined
+  user     User     @relation(fields: [userId], references: [id])
+  event    Event    @relation(fields: [eventId], references: [id]) 
   @@id([userId, eventId])
 }
 
 model Event {
-  id        String       @id @default(cuid())
-  title     String
-  date      DateTime
+  id          String       @id @default(cuid())
+  title       String
+  date        DateTime
+  endDate     DateTime?    // Optional for multi-day events
+  location    String?
+  description String?
+  duration    Int?         // Duration in hours
+  volunteers  Int?         // Number of volunteers needed
+  typeId      String?
+  type        EventType?   @relation(fields: [typeId], references: [id])
+  createdById String?
+  createdBy   User?        @relation(fields: [createdById], references: [id])
   userEvents  UserEvent[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model EventType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  color       String   // Store the Tailwind CSS class for the color
+  events      Event[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

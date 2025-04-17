@@ -4,89 +4,128 @@ import { useState, useEffect } from "react"
 import { addMonths, format, isSameDay, parseISO } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Users, Clock, CalendarIcon } from "lucide-react"
+import { MapPin, Users, Clock, CalendarIcon, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { EventForm } from "@/components/event-form"
+import { useToast } from "@/hooks/use-toast"
+import { useSession } from "next-auth/react"
+
+type Event = {
+  id: string
+  title: string
+  date: string
+  endDate?: string
+  location?: string
+  description?: string
+  duration?: number
+  volunteers?: number
+  type?: string
+  typeColor?: string
+  createdBy?: string
+  attendees?: number
+}
 
 export function CalendarView() {
   const [date, setDate] = useState<Date>(new Date())
   const [selectedDay, setSelectedDay] = useState<Date>(new Date())
-  const [events, setEvents] = useState<any[]>([])
+  const [events, setEvents] = useState<Event[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isClient, setIsClient] = useState(false)
+  const [showEventForm, setShowEventForm] = useState(false)
+  const { toast } = useToast()
+  const { data: session } = useSession()
 
-  // Use useEffect to generate events only on the client side
+  const fetchEvents = async () => {
+    setIsLoading(true)
+    try {
+      // Calculate date range for 3 months
+      const startDate = new Date()
+      startDate.setMonth(startDate.getMonth() - 1) // Include previous month
+      const endDate = new Date()
+      endDate.setMonth(endDate.getMonth() + 3)
+
+      // Format dates for API
+      const startDateStr = startDate.toISOString().split("T")[0]
+      const endDateStr = endDate.toISOString().split("T")[0]
+
+      const response = await fetch(`/api/events?startDate=${startDateStr}&endDate=${endDateStr}`)
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch events")
+      }
+
+      const data = await response.json()
+      setEvents(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+      console.error(err)
+      toast({
+        title: "Error",
+        description: "Failed to load events. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+      setIsClient(true)
+    }
+  }
+
+  // Fetch events on component mount and when date changes
   useEffect(() => {
-    setIsClient(true)
-    setEvents(generateEvents())
+    fetchEvents()
   }, [])
 
-  // Generate dummy events for current and next 2 months
-  const generateEvents = () => {
-    const today = new Date()
-    const events = []
+  // Handle event creation success
+  const handleEventCreated = () => {
+    setShowEventForm(false)
+    fetchEvents()
+    toast({
+      title: "Success",
+      description: "Event created successfully!",
+    })
+  }
 
-    // Event types with corresponding badge colors
-    const eventTypes = [
-      { type: "Tree Planting", color: "bg-green-100 text-green-800 hover:bg-green-100" },
-      { type: "Forest Restoration", color: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" },
-      { type: "Community Workshop", color: "bg-blue-100 text-blue-800 hover:bg-blue-100" },
-      { type: "Volunteer Training", color: "bg-amber-100 text-amber-800 hover:bg-amber-100" },
-    ]
-
-    // Locations in Northern Ireland
-    const locations = [
-      "Belfast City Park",
-      "Tollymore Forest Park",
-      "Glenariff Forest Park",
-      "Castlewellan Forest Park",
-      "Gortin Glen Forest Park",
-      "Clandeboye Estate",
-      "Lagan Valley Regional Park",
-      "Carnfunnock Country Park",
-      "Slieve Gullion Forest Park",
-      "Kilbroney Park",
-      "Drum Manor Forest Park",
-      "Gosford Forest Park",
-    ]
-
-    // Generate 15 events spread across 3 months
-    for (let i = 0; i < 15; i++) {
-      const monthOffset = Math.floor(i / 5) // Distribute events across 3 months
-      const eventDate = new Date(today)
-
-      // Set to a random day in the target month
-      eventDate.setMonth(today.getMonth() + monthOffset)
-      eventDate.setDate(Math.floor(Math.random() * 28) + 1) // Random day 1-28
-
-      // Random start time between 9am and 4pm
-      const startHour = Math.floor(Math.random() * 8) + 9
-      eventDate.setHours(startHour, 0, 0)
-
-      // Duration between 2-4 hours
-      const durationHours = Math.floor(Math.random() * 3) + 2
-
-      // Random event type
-      const eventTypeIndex = Math.floor(Math.random() * eventTypes.length)
-
-      // Random location
-      const locationIndex = Math.floor(Math.random() * locations.length)
-
-      // Random number of volunteers (10-50)
-      const volunteers = Math.floor(Math.random() * 41) + 10
-
-      events.push({
-        id: i + 1,
-        title: `${eventTypes[eventTypeIndex].type} Event`,
-        date: eventDate.toISOString(),
-        location: locations[locationIndex],
-        type: eventTypes[eventTypeIndex].type,
-        typeColor: eventTypes[eventTypeIndex].color,
-        duration: durationHours,
-        volunteers: volunteers,
-        description: `Join us for a ${eventTypes[eventTypeIndex].type.toLowerCase()} event at ${locations[locationIndex]}. We'll be working together to restore our local environment and create a greener Northern Ireland.`,
+  // Handle event attendance
+  const handleAttendEvent = async (eventId: string) => {
+    if (!session?.user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to attend events.",
+        variant: "destructive",
       })
+      return
     }
 
-    return events
+    try {
+      const response = await fetch(`/api/events/${eventId}/attend`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "attending" }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to attend event")
+      }
+
+      toast({
+        title: "Success",
+        description: "You're now attending this event!",
+      })
+
+      // Refresh events to update attendance count
+      fetchEvents()
+    } catch (error) {
+      console.error("Error attending event:", error)
+      toast({
+        title: "Error",
+        description: "Failed to register for this event. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   // Filter events for the selected day
@@ -110,81 +149,100 @@ export function CalendarView() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-7 gap-8 p-4">
       <div className="md:col-span-5">
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <Calendar
-            mode="single"
-            selected={selectedDay}
-            onSelect={(day) => day && setSelectedDay(day)}
-            month={date}
-            onMonthChange={setDate}
-            numberOfMonths={1}
-            className="w-full"
-            modifiersClassNames={{
-              selected: "bg-green-600 text-white hover:bg-green-600 hover:text-white",
-            }}
-            modifiers={{
-              hasEvent: (day) => events.some((event) => isSameDay(parseISO(event.date), day)),
-            }}
-            styles={{
-              months: {
-                width: "100%",
-              },
-              month: {
-                width: "100%",
-              },
-              table: {
-                width: "100%",
-                borderSpacing: "0.25rem",
-                tableLayout: "fixed",
-              },
-              head_cell: {
-                width: "100%",
-                padding: "0.75rem 0",
-                fontSize: "1rem",
-                fontWeight: "600",
-              },
-              cell: {
-                width: "100%",
-                height: "3.5rem",
-                padding: "0.25rem",
-              },
-              day: {
-                width: "100%",
-                height: "100%",
-                fontSize: "1rem",
-                fontWeight: "normal",
-              },
-              day_today: {
-                fontWeight: "bold",
-                borderWidth: "1px",
-                borderColor: "rgb(34 197 94)",
-              },
-              day_selected: {
-                backgroundColor: "rgb(22 163 74)",
-                color: "white",
-              },
-              day_hasEvent: {
-                backgroundColor: "rgb(240 253 244)",
-                color: "rgb(22 101 52)",
-              },
-            }}
-            components={{
-              DayContent: ({ date, displayMonth }) => {
-                const hasEvents = events.some((event) => isSameDay(parseISO(event.date), date))
-                return (
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <span className="text-base">{format(date, "d")}</span>
-                    {hasEvents && (
-                      <div className="absolute bottom-1 left-0 right-0 flex justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
-                      </div>
-                    )}
-                  </div>
-                )
-              },
-            }}
-          />
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Events Calendar</h2>
+          {session?.user && (
+            <Button onClick={() => setShowEventForm(true)} className="bg-green-600 hover:bg-green-700">
+              <Plus className="h-4 w-4 mr-2" /> Add Event
+            </Button>
+          )}
         </div>
+
+        {showEventForm && session?.user ? (
+          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+            <EventForm
+              selectedDate={selectedDay}
+              onSuccess={handleEventCreated}
+              onCancel={() => setShowEventForm(false)}
+            />
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <Calendar
+              mode="single"
+              selected={selectedDay}
+              onSelect={(day) => day && setSelectedDay(day)}
+              month={date}
+              onMonthChange={setDate}
+              numberOfMonths={1}
+              className="w-full"
+              modifiersClassNames={{
+                selected: "bg-green-600 text-white hover:bg-green-600 hover:text-white",
+              }}
+              modifiers={{
+                hasEvent: (day) => events.some((event) => isSameDay(parseISO(event.date), day)),
+              }}
+              styles={{
+                months: {
+                  width: "100%",
+                },
+                month: {
+                  width: "100%",
+                },
+                table: {
+                  width: "100%",
+                  borderSpacing: "0.25rem",
+                  tableLayout: "fixed",
+                },
+                head_cell: {
+                  width: "100%",
+                  padding: "0.75rem 0",
+                  fontSize: "1rem",
+                  fontWeight: "600",
+                },
+                cell: {
+                  width: "100%",
+                  height: "3.5rem",
+                  padding: "0.25rem",
+                },
+                day: {
+                  width: "100%",
+                  height: "100%",
+                  fontSize: "1rem",
+                  fontWeight: "normal",
+                },
+                day_today: {
+                  fontWeight: "bold",
+                  borderWidth: "1px",
+                  borderColor: "rgb(34 197 94)",
+                },
+                day_selected: {
+                  backgroundColor: "rgb(22 163 74)",
+                  color: "white",
+                },
+                day_hasEvent: {
+                  backgroundColor: "rgb(240 253 244)",
+                  color: "rgb(22 101 52)",
+                },
+              }}
+              components={{
+                DayContent: ({ date, displayMonth }) => {
+                  const hasEvents = events.some((event) => isSameDay(parseISO(event.date), date))
+                  return (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <span className="text-base">{format(date, "d")}</span>
+                      {hasEvents && (
+                        <div className="absolute bottom-1 left-0 right-0 flex justify-center">
+                          <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                },
+              }}
+            />
+          </div>
+        )}
 
         <div className="mt-6 bg-white rounded-lg shadow-md p-4">
           <h3 className="font-medium text-lg mb-4">
@@ -199,25 +257,37 @@ export function CalendarView() {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg">{event.title}</CardTitle>
-                    <Badge className={event.typeColor}>{event.type}</Badge>
+                    {event.type && event.typeColor && <Badge className={event.typeColor}>{event.type}</Badge>}
                   </div>
-                  <CardDescription className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {event.location}
-                  </CardDescription>
+                  {event.location && (
+                    <CardDescription className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {event.location}
+                    </CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent className="pb-2">
-                  <p className="text-sm">{event.description}</p>
+                  {event.description && <p className="text-sm">{event.description}</p>}
                 </CardContent>
                 <CardFooter className="flex justify-between text-sm text-muted-foreground pt-0">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />
-                    {format(parseISO(event.date), "h:mm a")} ({event.duration} hours)
+                    {format(parseISO(event.date), "h:mm a")}
+                    {event.duration && ` (${event.duration} hours)`}
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="h-3.5 w-3.5" />
-                    {event.volunteers} volunteers
+                    {event.attendees || 0} attendees
                   </div>
+                </CardFooter>
+                <CardFooter className="pt-0">
+                  <Button
+                    onClick={() => handleAttendEvent(event.id)}
+                    variant="outline"
+                    className="w-full border-green-600 text-green-700 hover:bg-green-50"
+                  >
+                    {session?.user ? "Attend This Event" : "Sign In to Attend"}
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
@@ -249,10 +319,12 @@ export function CalendarView() {
                     </div>
                     <div>
                       <h4 className="text-sm font-medium">{event.title}</h4>
-                      <div className="flex items-center text-xs text-muted-foreground mt-1">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {event.location}
-                      </div>
+                      {event.location && (
+                        <div className="flex items-center text-xs text-muted-foreground mt-1">
+                          <MapPin className="h-3 w-3 mr-1" />
+                          {event.location}
+                        </div>
+                      )}
                       <div className="flex items-center text-xs text-muted-foreground mt-0.5">
                         <Clock className="h-3 w-3 mr-1" />
                         {format(parseISO(event.date), "h:mm a")}
@@ -277,30 +349,19 @@ export function CalendarView() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Tree Planting</Badge>
-                <span className="text-sm text-muted-foreground">
-                  {events.filter((e) => e.type === "Tree Planting").length} events
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Forest Restoration</Badge>
-                <span className="text-sm text-muted-foreground">
-                  {events.filter((e) => e.type === "Forest Restoration").length} events
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Community Workshop</Badge>
-                <span className="text-sm text-muted-foreground">
-                  {events.filter((e) => e.type === "Community Workshop").length} events
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Volunteer Training</Badge>
-                <span className="text-sm text-muted-foreground">
-                  {events.filter((e) => e.type === "Volunteer Training").length} events
-                </span>
-              </div>
+              {[
+                { type: "Tree Planting", color: "bg-green-100 text-green-800 hover:bg-green-100" },
+                { type: "Forest Restoration", color: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" },
+                { type: "Community Workshop", color: "bg-blue-100 text-blue-800 hover:bg-blue-100" },
+                { type: "Volunteer Training", color: "bg-amber-100 text-amber-800 hover:bg-amber-100" },
+              ].map((typeInfo) => (
+                <div key={typeInfo.type} className="flex items-center justify-between">
+                  <Badge className={typeInfo.color}>{typeInfo.type}</Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {events.filter((e) => e.type === typeInfo.type).length} events
+                  </span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
