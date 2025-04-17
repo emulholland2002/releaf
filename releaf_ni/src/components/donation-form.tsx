@@ -2,18 +2,20 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Heart, TreeDeciduous } from "lucide-react"
 
 export default function DonationForm() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [donationAmount, setDonationAmount] = useState("25")
   const [customAmount, setCustomAmount] = useState("")
@@ -24,6 +26,21 @@ export default function DonationForm() {
     email: "",
     message: "",
   })
+
+  useEffect(() => {
+    if (session?.user) {
+      const nameParts = session.user.name ? session.user.name.split(" ") : ["", ""]
+      const firstName = nameParts[0] || ""
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : ""
+
+      setFormData((prev) => ({
+        ...prev,
+        firstName,
+        lastName,
+        email: session.user.email || "",
+      }))
+    }
+  }, [session])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -63,15 +80,15 @@ export default function DonationForm() {
 
     // Prepare data to match the Donation model
     const donationData = {
-      name: `${formData.firstName} ${formData.lastName}`, // Combine first and last name to match the model
+      name: `${formData.firstName} ${formData.lastName}`,
       email: formData.email,
       amount: Number(amount),
-      message: formData.message || undefined, // Only include if not empty
-      status: "pending", // Default status
+      message: formData.message || undefined,
+      status: "pending",
     }
 
     try {
-      const response = await fetch("/api/donations", {
+      const response = await fetch("/api/donate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
