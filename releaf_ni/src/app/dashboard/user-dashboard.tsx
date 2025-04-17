@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CalendarIcon, HeartIcon, LeafIcon, TrendingUpIcon } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { CalendarIcon, HeartIcon, LeafIcon, TrendingUpIcon, PlusIcon } from "lucide-react"
 
 type DonationData = {
   month: string
@@ -20,38 +21,58 @@ type DonationsResponse = {
   total: number
 }
 
+type Activity = {
+  id: string
+  type: string
+  description: string
+  date: string
+  amount?: number
+  status?: string
+  eventType?: string
+  eventColor?: string
+}
+
+type ActivitiesResponse = {
+  activities: Activity[]
+  activitiesThisMonth: number
+  totalActivities: number
+}
+
 export default function UserDashboard() {
   const [donationData, setDonationData] = useState<DonationsResponse | null>(null)
+  const [activityData, setActivityData] = useState<ActivitiesResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Generate dummy stats
-  const dummyStats = {
-    // Random number between 3 and 12
-    activitiesThisMonth: Math.floor(Math.random() * 10) + 3,
-    // Random number between 50 and 95
-    impactScore: Math.floor(Math.random() * 46) + 50,
-  }
-
   useEffect(() => {
-    const fetchDonations = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await fetch("/api/donations/user")
-        if (!response.ok) {
+
+        // Fetch donations
+        const donationsResponse = await fetch("/api/donations/user")
+        if (!donationsResponse.ok) {
           throw new Error("Failed to fetch donation data")
         }
-        const data = await response.json()
-        setDonationData(data)
+        const donationsData = await donationsResponse.json()
+        setDonationData(donationsData)
+
+        // Fetch activities
+        const activitiesResponse = await fetch("/api/events/user")
+        if (!activitiesResponse.ok) {
+          throw new Error("Failed to fetch activity data")
+        }
+        const activitiesData = await activitiesResponse.json()
+        setActivityData(activitiesData)
       } catch (err) {
-        setError("Could not load donation data. Please try again later.")
+        setError("Could not load user data. Please try again later.")
         console.error(err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchDonations()
+    fetchData()
   }, [])
 
   if (error) {
@@ -62,25 +83,40 @@ export default function UserDashboard() {
     )
   }
 
+  // Calculate impact score based on donations and activities
+  const calculateImpactScore = () => {
+    if (!donationData || !activityData) return 0
+
+    // Simple algorithm: 1 point per £1 donated + 5 points per activity
+    const donationPoints = donationData.total
+    const activityPoints = activityData.totalActivities * 5
+
+    // Scale to 0-100
+    const totalPoints = donationPoints + activityPoints
+    const scaledScore = Math.min(Math.round(totalPoints / 10), 100)
+
+    return scaledScore
+  }
+
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <StatsCard
           title="Total Donated"
-          value={loading ? null : `£${donationData?.total.toLocaleString()}`}
+          value={loading ? null : `£${donationData?.total.toLocaleString() || "0"}`}
           description="Your lifetime contribution"
           icon={<HeartIcon className="h-5 w-5 text-rose-500" />}
         />
         <StatsCard
           title="Activities This Month"
-          value={loading ? null : dummyStats.activitiesThisMonth.toString()}
+          value={loading ? null : (activityData?.activitiesThisMonth || 0).toString()}
           description="Your recent engagement"
           icon={<CalendarIcon className="h-5 w-5 text-blue-500" />}
         />
         <StatsCard
           title="Impact Score"
-          value={loading ? null : dummyStats.impactScore.toString()}
+          value={loading ? null : calculateImpactScore().toString()}
           description="Your environmental impact"
           icon={<LeafIcon className="h-5 w-5 text-green-500" />}
         />
@@ -147,11 +183,21 @@ export default function UserDashboard() {
                     <Skeleton key={i} className="h-12 w-full" />
                   ))}
                 </div>
-              ) : (
+              ) : activityData?.activities && activityData.activities.length > 0 ? (
                 <div className="space-y-4">
-                  {generateDummyActivities().map((activity) => (
-                    <ActivityItem key={activity.id} event={activity} />
+                  {activityData.activities.map((activity) => (
+                    <ActivityItem key={activity.id} activity={activity} />
                   ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
+                    <CalendarIcon className="h-6 w-6 text-gray-500" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">No activities yet</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    You haven't participated in any events or made donations yet.
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -160,33 +206,6 @@ export default function UserDashboard() {
       </Tabs>
     </div>
   )
-}
-
-// Generate dummy activities for the activity tab
-function generateDummyActivities() {
-  const eventTypes = ["Donation", "Volunteer Sign-up", "Event Registration", "Newsletter Subscription"]
-  const descriptions = [
-    "Made a donation to tree planting initiative",
-    "Signed up for weekend cleanup event",
-    "Registered for environmental workshop",
-    "Subscribed to monthly newsletter",
-    "Participated in community garden project",
-  ]
-
-  return Array.from({ length: 5 }).map((_, i) => {
-    const type = eventTypes[Math.floor(Math.random() * eventTypes.length)]
-    const daysAgo = Math.floor(Math.random() * 30)
-    const date = new Date()
-    date.setDate(date.getDate() - daysAgo)
-
-    return {
-      id: `dummy-event-${i}`,
-      type,
-      description: descriptions[i],
-      date: date.toISOString(),
-      amount: type === "Donation" ? Math.floor(Math.random() * 100) + 10 : null,
-    }
-  })
 }
 
 function StatsCard({
@@ -214,8 +233,8 @@ function StatsCard({
   )
 }
 
-function ActivityItem({ event }: { event: any }) {
-  const date = new Date(event.date)
+function ActivityItem({ activity }: { activity: Activity }) {
+  const date = new Date(activity.date)
   const formattedDate = date.toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
@@ -226,10 +245,10 @@ function ActivityItem({ event }: { event: any }) {
     switch (type) {
       case "Donation":
         return <HeartIcon className="h-5 w-5 text-rose-500" />
-      case "Volunteer Sign-up":
-        return <LeafIcon className="h-5 w-5 text-green-500" />
       case "Event Registration":
         return <CalendarIcon className="h-5 w-5 text-blue-500" />
+      case "Event Creation":
+        return <PlusIcon className="h-5 w-5 text-green-500" />
       default:
         return <TrendingUpIcon className="h-5 w-5 text-gray-500" />
     }
@@ -237,13 +256,34 @@ function ActivityItem({ event }: { event: any }) {
 
   return (
     <div className="flex items-center space-x-4 rounded-md border p-3">
-      <div className="flex-shrink-0">{getEventIcon(event.type)}</div>
+      <div className="flex-shrink-0">{getEventIcon(activity.type)}</div>
       <div className="flex-1 space-y-1">
-        <p className="text-sm font-medium">{event.type}</p>
-        <p className="text-xs text-muted-foreground">{event.description}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium">{activity.type}</p>
+          {activity.eventType && (
+            <Badge className={activity.eventColor || "bg-gray-100 text-gray-800"} variant="outline">
+              {activity.eventType}
+            </Badge>
+          )}
+          {activity.status && (
+            <Badge
+              className={
+                activity.status === "attending"
+                  ? "bg-green-100 text-green-800"
+                  : activity.status === "interested"
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-gray-100 text-gray-800"
+              }
+              variant="outline"
+            >
+              {activity.status}
+            </Badge>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">{activity.description}</p>
       </div>
       <div className="text-right">
-        {event.amount && <p className="text-sm font-medium">£{event.amount}</p>}
+        {activity.amount && <p className="text-sm font-medium">£{activity.amount}</p>}
         <p className="text-xs text-muted-foreground">{formattedDate}</p>
       </div>
     </div>

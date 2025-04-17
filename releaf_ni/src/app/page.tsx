@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { TreeDeciduous, Recycle, Users } from "lucide-react"
+import Image from 'next/image'
+import bannerImage from '../../public/images/banner.png' 
 
 export default function Home() {
   return (
@@ -32,10 +34,14 @@ export default function Home() {
               </div>
             </div>
             <div className="relative h-[300px] md:h-[400px] lg:h-[500px] rounded-lg overflow-hidden">
-              <img
-                src="/images/banner.png"
+              <Image
+                src={bannerImage || "/placeholder.svg"}
                 alt="Northern Ireland forest landscape"
-                className="object-cover w-full h-full"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                quality={80}
+                priority={true}
+                className="w-full h-full object-contain"
               />
             </div>
           </div>
