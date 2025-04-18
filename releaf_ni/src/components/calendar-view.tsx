@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { addMonths, format, isSameDay, parseISO } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Users, Clock, CalendarIcon, Plus } from "lucide-react"
+import { MapPin, Users, Clock, CalendarIcon, Plus, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { EventForm } from "@/components/event-form"
@@ -24,6 +24,11 @@ type Event = {
   typeColor?: string
   createdBy?: string
   attendees?: number
+  attendeesList?: Array<{
+    id: string
+    name: string
+    status: string
+  }>
 }
 
 export function CalendarView() {
@@ -87,6 +92,13 @@ export function CalendarView() {
     })
   }
 
+  // Check if the current user is attending an event
+  const isUserAttending = (event: Event) => {
+    if (!session?.user?.email) return false
+
+    return event.attendeesList?.some((attendee) => attendee.id === session.user?.id && attendee.status === "attending")
+  }
+
   // Handle event attendance
   const handleAttendEvent = async (eventId: string) => {
     if (!session?.user) {
@@ -123,6 +135,38 @@ export function CalendarView() {
       toast({
         title: "Error",
         description: "Failed to register for this event. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Handle removing attendance
+  const handleRemoveAttendance = async (eventId: string) => {
+    if (!session?.user) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/events/${eventId}/attend`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to remove attendance")
+      }
+
+      toast({
+        title: "Success",
+        description: "You've been removed from this event.",
+      })
+
+      // Refresh events to update attendance count
+      fetchEvents()
+    } catch (error) {
+      console.error("Error removing attendance:", error)
+      toast({
+        title: "Error",
+        description: "Failed to remove you from this event. Please try again.",
         variant: "destructive",
       })
     }
@@ -281,13 +325,23 @@ export function CalendarView() {
                   </div>
                 </CardFooter>
                 <CardFooter className="pt-0">
-                  <Button
-                    onClick={() => handleAttendEvent(event.id)}
-                    variant="outline"
-                    className="w-full border-green-600 text-green-700 hover:bg-green-50"
-                  >
-                    {session?.user ? "Attend This Event" : "Sign In to Attend"}
-                  </Button>
+                  {isUserAttending(event) ? (
+                    <Button
+                      onClick={() => handleRemoveAttendance(event.id)}
+                      variant="outline"
+                      className="w-full border-red-600 text-red-700 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4 mr-2" /> Cancel Attendance
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => handleAttendEvent(event.id)}
+                      variant="outline"
+                      className="w-full border-green-600 text-green-700 hover:bg-green-50"
+                    >
+                      {session?.user ? "Attend This Event" : "Sign In to Attend"}
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             ))}
@@ -317,7 +371,7 @@ export function CalendarView() {
                       <span className="text-xs font-medium">{format(parseISO(event.date), "MMM")}</span>
                       <span className="text-lg font-bold leading-none">{format(parseISO(event.date), "d")}</span>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h4 className="text-sm font-medium">{event.title}</h4>
                       {event.location && (
                         <div className="flex items-center text-xs text-muted-foreground mt-1">
@@ -330,6 +384,16 @@ export function CalendarView() {
                         {format(parseISO(event.date), "h:mm a")}
                       </div>
                     </div>
+                    {isUserAttending(event) && (
+                      <Button
+                        onClick={() => handleRemoveAttendance(event.id)}
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
                   </div>
                 ))}
             </div>
