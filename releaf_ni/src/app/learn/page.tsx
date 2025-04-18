@@ -1,13 +1,21 @@
+/**
+ * LearnPage Component
+ *
+ * An educational page about afforestation in Northern Ireland that presents
+ * data, facts, benefits, and challenges in a structured, visually appealing format.
+ * The page aims to inform visitors and encourage them to take action through donations or volunteering.
+ */
 import Link from "next/link"
 import { ArrowRight, Leaf, TreePine, CloudRain, Bug, Users } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import AfforestationChart from "./afforestation-chart"
+import AfforestationChart from "../../components/afforestation-chart"
 
 export default function LearnPage() {
   return (
     <div className="container mx-auto py-12 px-4">
+      {/* Page Header Section */}
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-bold tracking-tight mb-4">Learn About Afforestation in Northern Ireland</h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -15,7 +23,7 @@ export default function LearnPage() {
         </p>
       </div>
 
-      {/* Graph Section */}
+      {/* Data Visualization Section - Shows historical afforestation trends */}
       <div className="flex justify-center mb-12">
         <Card className="mb-12 max-w-4xl mx-auto">
           <CardHeader>
@@ -30,10 +38,12 @@ export default function LearnPage() {
         </Card>
       </div>
 
-      {/* Key Facts Section */}
+      {/* Key Facts Section - Displays important statistics in card format */}
       <div className="mb-12">
         <h2 className="text-3xl font-bold mb-6 text-center">Key Facts</h2>
+        {/* Responsive grid: 1 column on mobile, 2 on medium screens, 3 on large screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Current Coverage Stat Card */}
           <Card>
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="bg-green-100 p-2 rounded-full">
@@ -50,6 +60,7 @@ export default function LearnPage() {
             </CardContent>
           </Card>
 
+          {/* Planting Target Stat Card */}
           <Card>
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="bg-green-100 p-2 rounded-full">
@@ -66,6 +77,7 @@ export default function LearnPage() {
             </CardContent>
           </Card>
 
+          {/* Community Impact Stat Card */}
           <Card>
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="bg-green-100 p-2 rounded-full">
@@ -84,10 +96,12 @@ export default function LearnPage() {
         </div>
       </div>
 
-      {/* Benefits Section */}
+      {/* Benefits Section - Highlights environmental and ecological advantages */}
       <div className="mb-12">
         <h2 className="text-3xl font-bold mb-6 text-center">Benefits of Afforestation</h2>
+        {/* Two-column grid on medium and larger screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Climate Resilience Benefits Card */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -113,6 +127,7 @@ export default function LearnPage() {
             </CardContent>
           </Card>
 
+          {/* Biodiversity Benefits Card */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -140,12 +155,13 @@ export default function LearnPage() {
         </div>
       </div>
 
-      {/* Challenges Section */}
+      {/* Challenges Section - Outlines current obstacles to afforestation */}
       <div className="mb-12">
         <h2 className="text-3xl font-bold mb-6 text-center">Current Challenges</h2>
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-4">
+              {/* Challenge 1: Low Planting Rates */}
               <div className="flex items-start gap-4">
                 <div className="bg-amber-100 p-2 rounded-full h-10 w-10 flex items-center justify-center shrink-0">
                   <span className="font-bold text-amber-700">1</span>
@@ -159,6 +175,7 @@ export default function LearnPage() {
                 </div>
               </div>
 
+              {/* Challenge 2: Land Use Competition */}
               <div className="flex items-start gap-4">
                 <div className="bg-amber-100 p-2 rounded-full h-10 w-10 flex items-center justify-center shrink-0">
                   <span className="font-bold text-amber-700">2</span>
@@ -172,6 +189,7 @@ export default function LearnPage() {
                 </div>
               </div>
 
+              {/* Challenge 3: Funding Gaps */}
               <div className="flex items-start gap-4">
                 <div className="bg-amber-100 p-2 rounded-full h-10 w-10 flex items-center justify-center shrink-0">
                   <span className="font-bold text-amber-700">3</span>
@@ -189,13 +207,14 @@ export default function LearnPage() {
         </Card>
       </div>
 
-      {/* Call to Action */}
+      {/* Call to Action Section - Encourages user engagement */}
       <div className="text-center">
         <h2 className="text-3xl font-bold mb-4">Help Us Make Northern Ireland Greener</h2>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
           Join our efforts to increase woodland coverage, improve biodiversity, and combat climate change through
           afforestation.
         </p>
+        {/* Action buttons with responsive wrapping */}
         <div className="flex flex-wrap gap-4 justify-center">
           <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
             <Link href="/donate">

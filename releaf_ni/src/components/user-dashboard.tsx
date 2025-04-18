@@ -1,3 +1,9 @@
+/**
+ * UserDashboard Component
+ *
+ * This component displays a comprehensive dashboard for users of the ReLeaf NI platform.
+ * It shows donation history, activity tracking, and impact metrics.
+ */
 "use client"
 
 import type React from "react"
@@ -11,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { CalendarIcon, HeartIcon, LeafIcon, TrendingUpIcon, PlusIcon } from "lucide-react"
 
+// Type definitions for API responses and data structures
 type DonationData = {
   month: string
   amount: number
@@ -38,6 +45,10 @@ type ActivitiesResponse = {
   totalActivities: number
 }
 
+/**
+ * Main dashboard component that fetches and displays user data
+ * including donations, activities, and calculated impact score
+ */
 export default function UserDashboard() {
   const [donationData, setDonationData] = useState<DonationsResponse | null>(null)
   const [activityData, setActivityData] = useState<ActivitiesResponse | null>(null)
@@ -48,6 +59,8 @@ export default function UserDashboard() {
     const fetchData = async () => {
       try {
         setLoading(true)
+
+        // Fetch user donation history and activity data from API endpoints
 
         // Fetch donations
         const donationsResponse = await fetch("/api/donations/user")
@@ -83,7 +96,12 @@ export default function UserDashboard() {
     )
   }
 
-  // Calculate impact score based on donations and activities
+  /**
+   * Calculates a user's environmental impact score based on:
+   * - Total donation amount (1 point per £1)
+   * - Number of activities (5 points per activity)
+   * The score is scaled to a 0-100 range
+   */
   const calculateImpactScore = () => {
     if (!donationData || !activityData) return 0
 
@@ -208,6 +226,10 @@ export default function UserDashboard() {
   )
 }
 
+/**
+ * Reusable card component for displaying key metrics
+ * Supports loading state with skeleton UI
+ */
 function StatsCard({
   title,
   value,
@@ -233,6 +255,10 @@ function StatsCard({
   )
 }
 
+/**
+ * Renders a single activity item with appropriate icons and badges
+ * Different styling based on activity type (donation, event, etc.)
+ */
 function ActivityItem({ activity }: { activity: Activity }) {
   const date = new Date(activity.date)
   const formattedDate = date.toLocaleDateString("en-GB", {
@@ -242,6 +268,7 @@ function ActivityItem({ activity }: { activity: Activity }) {
   })
 
   const getEventIcon = (type: string) => {
+    // Return appropriate icon based on activity type
     switch (type) {
       case "Donation":
         return <HeartIcon className="h-5 w-5 text-rose-500" />

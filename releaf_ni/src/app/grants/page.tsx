@@ -1,9 +1,18 @@
+/**
+ * GrantsPage Component
+ *
+ * This component displays a comprehensive directory of grant-related resources
+ * for afforestation and tree planting initiatives in Northern Ireland.
+ * It presents information in a responsive grid of interactive cards.
+ */
 import Link from "next/link"
 import { Search, FileCheck, BookOpen, Users, BarChart3, Newspaper } from "lucide-react"
 
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function GrantsPage() {
+  // Array of grant resources with their details and navigation links
+  // Each object contains title, description, icon, link and call-to-action text
   const grants = [
     {
       title: "Grant Search and Directory",
@@ -51,6 +60,7 @@ export default function GrantsPage() {
 
   return (
     <div className="container mx-auto py-12 px-4">
+      {/* Page header with title and description */}
       <div className="mb-12 text-center">
         <h1 className="text-4xl font-bold tracking-tight mb-4">Afforestation Grants</h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -59,6 +69,10 @@ export default function GrantsPage() {
         </p>
       </div>
 
+      {/* Responsive grid layout:
+          - 1 column on mobile (default)
+          - 2 columns on medium screens (md)
+          - 3 columns on large screens (lg) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {grants.map((grant, index) => (
           <Card key={index} className="flex flex-col h-full transition-all duration-200 hover:shadow-lg">
@@ -67,6 +81,7 @@ export default function GrantsPage() {
               <CardTitle className="text-xl">{grant.title}</CardTitle>
               <CardDescription className="text-base">{grant.description}</CardDescription>
             </CardHeader>
+            {/* CardFooter with mt-auto pushes the button to the bottom of the card */}
             <CardFooter className="mt-auto pt-4">
               <Link
                 href={grant.href}
