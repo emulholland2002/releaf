@@ -1,76 +1,147 @@
+/**
+ * Prisma Schema File
+ * 
+ * This schema defines the data models for the ReLeaf NI application,
+ * including users, donations, events, and their relationships.
+ * It serves as the single source of truth for the database structure
+ * and is used to generate the Prisma Client.
+ */
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+/**
+ * Generator Configuration
+ * 
+ * Specifies that we want to generate a Prisma Client for JavaScript/TypeScript.
+ * This client provides type-safe database access.
+ */
 generator client {
   provider = "prisma-client-js"
 }
 
+/**
+ * Data Source Configuration
+ * 
+ * Defines the database connection using PostgreSQL.
+ * The connection URL is stored in an environment variable for security.
+ */
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+/**
+ * User Model
+ * 
+ * Represents registered users of the application.
+ * Users can make donations, participate in events, and create events.
+ * 
+ * Relations:
+ * - One-to-many with Donation (a user can make multiple donations)
+ * - Many-to-many with Event through UserEvent (users can attend multiple events)
+ * - One-to-many with Event as creator (a user can create multiple events)
+ */
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  donations Donation[]
-  userEvents UserEvent[]
+  id        String   @id @default(cuid()) // Unique identifier using CUID
+  name      String?  // Optional user name
+  email     String   @unique // Unique email for authentication
+  password  String   // Hashed password for authentication
+  createdAt DateTime @default(now()) // Timestamp of user creation
+  updatedAt DateTime @updatedAt // Automatically updated timestamp
+  donations Donation[] // Relation to donations made by this user
+  userEvents UserEvent[] // Relation to events this user is participating in
   createdEvents Event[] // Events created by this user
 }
 
+/**
+ * Donation Model
+ * 
+ * Represents financial contributions made to the organization.
+ * Donations can be associated with a registered user or made anonymously.
+ * 
+ * Relations:
+ * - Many-to-one with User (optional - donations can be anonymous)
+ */
 model Donation {
-  id        String   @id @default(cuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  name      String
-  email     String
-  amount    Float
-  message   String?
-  status    String   @default("pending") // pending, completed, failed
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid()) // Unique identifier using CUID
+  userId    String?  // Optional reference to a registered user
+  user      User?    @relation(fields: [userId], references: [id]) // Relation to the user who made the donation
+  name      String   // Name of the donor (could be different from user name for anonymous donations)
+  email     String   // Email of the donor (could be different from user email)
+  amount    Float    // Donation amount
+  message   String?  // Optional message from the donor
+  status    String   @default("pending") // Payment status: pending, completed, failed
+  createdAt DateTime @default(now()) // Timestamp of donation creation
+  updatedAt DateTime @updatedAt // Automatically updated timestamp
 }
 
+/**
+ * UserEvent Model
+ * 
+ * Junction table for the many-to-many relationship between User and Event.
+ * Tracks user participation in events with additional metadata.
+ * 
+ * Relations:
+ * - Many-to-one with User
+ * - Many-to-one with Event
+ */
 model UserEvent {
-  userId   String
-  eventId  String
-  addedAt  DateTime @default(now())
-  status   String   @default("attending") // attending, interested, declined
-  user     User     @relation(fields: [userId], references: [id])
-  event    Event    @relation(fields: [eventId], references: [id]) 
-  @@id([userId, eventId])
+  userId   String   // Reference to the user
+  eventId  String   // Reference to the event
+  addedAt  DateTime @default(now()) // When the user was added to the event
+  status   String   @default("attending") // Participation status: attending, interested, declined
+  user     User     @relation(fields: [userId], references: [id]) // Relation to the user
+  event    Event    @relation(fields: [eventId], references: [id]) // Relation to the event
+  @@id([userId, eventId]) // Composite primary key
 }
 
+/**
+ * Event Model
+ * 
+ * Represents tree planting events, workshops, or other activities organized by ReLeaf NI.
+ * Events have a type, location, date, and can be attended by multiple users.
+ * 
+ * Relations:
+ * - Many-to-one with EventType (categorizes the event)
+ * - Many-to-one with User as creator (who created the event)
+ * - Many-to-many with User through UserEvent (users attending the event)
+ */
 model Event {
-  id          String       @id @default(cuid())
-  title       String
-  date        DateTime
-  endDate     DateTime?    // Optional for multi-day events
-  location    String?
-  description String?
-  duration    Int?         // Duration in hours
-  volunteers  Int?         // Number of volunteers needed
-  typeId      String?
-  type        EventType?   @relation(fields: [typeId], references: [id])
-  createdById String?
-  createdBy   User?        @relation(fields: [createdById], references: [id])
-  userEvents  UserEvent[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id          String       @id @default(cuid()) // Unique identifier using CUID
+  title       String       // Event title
+  date        DateTime     // Start date and time of the event
+  endDate     DateTime?    // Optional end date for multi-day events
+  location    String?      // Optional physical location of the event
+  description String?      // Optional detailed description
+  duration    Int?         // Optional duration in hours
+  volunteers  Int?         // Optional number of volunteers needed
+  typeId      String?      // Reference to the event type
+  type        EventType?   @relation(fields: [typeId], references: [id]) // Relation to the event type
+  createdById String?      // Reference to the user who created the event
+  createdBy   User?        @relation(fields: [createdById], references: [id]) // Relation to the creator
+  userEvents  UserEvent[]  // Relation to users participating in this event
+  createdAt   DateTime     @default(now()) // Timestamp of event creation
+  updatedAt   DateTime     @updatedAt // Automatically updated timestamp
 }
 
+/**
+ * EventType Model
+ * 
+ * Categorizes events (e.g., Tree Planting, Workshop, Cleanup).
+ * Includes visual styling information for the UI.
+ * 
+ * Relations:
+ * - One-to-many with Event (an event type can be used for multiple events)
+ */
 model EventType {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  color       String   // Store the Tailwind CSS class for the color
-  events      Event[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String   @id @default(cuid()) // Unique identifier using CUID
+  name        String   @unique // Unique name of the event type
+  color       String   // Tailwind CSS class for color-coding in the UI
+  events      Event[]  // Relation to events of this type
+  createdAt   DateTime @default(now()) // Timestamp of event type creation
+  updatedAt   DateTime @updatedAt // Automatically updated timestamp
 }

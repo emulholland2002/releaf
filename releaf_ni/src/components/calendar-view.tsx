@@ -1,16 +1,41 @@
+/**
+ * Calendar View Component
+ *
+ * This component provides a comprehensive calendar interface for ReLeaf NI events,
+ * allowing users to:
+ * - View events on a monthly calendar
+ * - See event details for selected dates
+ * - Register for events
+ * - Create new events (for authenticated users)
+ * - View upcoming events and event categories
+ */
+
 "use client"
 
+// React hooks for state management and side effects
 import { useState, useEffect } from "react"
+
+// Date handling utilities from date-fns
 import { addMonths, format, isSameDay, parseISO } from "date-fns"
+
+// UI components
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Users, Clock, CalendarIcon, Plus, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+
+// Icons from Lucide React
+import { MapPin, Users, Clock, CalendarIcon, Plus } from "lucide-react"
+
+// Custom components and hooks
 import { EventForm } from "@/components/event-form"
 import { useToast } from "@/hooks/use-toast"
 import { useSession } from "next-auth/react"
 
+/**
+ * Event type definition
+ * Represents the structure of event data received from the API
+ */
 type Event = {
   id: string
   title: string
@@ -24,24 +49,30 @@ type Event = {
   typeColor?: string
   createdBy?: string
   attendees?: number
-  attendeesList?: Array<{
-    id: string
-    name: string
-    status: string
-  }>
 }
 
 export function CalendarView() {
-  const [date, setDate] = useState<Date>(new Date())
-  const [selectedDay, setSelectedDay] = useState<Date>(new Date())
+  // State for calendar navigation and selection
+  const [date, setDate] = useState<Date>(new Date()) // Current month displayed
+  const [selectedDay, setSelectedDay] = useState<Date>(new Date()) // Selected day for event details
+
+  // State for events data and loading
   const [events, setEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isClient, setIsClient] = useState(false)
-  const [showEventForm, setShowEventForm] = useState(false)
+
+  // State for client-side rendering and UI control
+  const [isClient, setIsClient] = useState(false) // Prevents hydration mismatch
+  const [showEventForm, setShowEventForm] = useState(false) // Controls event form visibility
+
+  // Hooks for toast notifications and authentication
   const { toast } = useToast()
   const { data: session } = useSession()
 
+  /**
+   * Fetches events from the API for a 4-month range
+   * (previous month + current month + 3 future months)
+   */
   const fetchEvents = async () => {
     setIsLoading(true)
     try {
@@ -64,6 +95,7 @@ export function CalendarView() {
       const data = await response.json()
       setEvents(data)
     } catch (err) {
+      // Handle and display errors
       setError(err instanceof Error ? err.message : "An error occurred")
       console.error(err)
       toast({
@@ -73,16 +105,19 @@ export function CalendarView() {
       })
     } finally {
       setIsLoading(false)
-      setIsClient(true)
+      setIsClient(true) // Mark as client-side rendered to prevent hydration issues
     }
   }
 
-  // Fetch events on component mount and when date changes
+  // Fetch events on component mount
   useEffect(() => {
     fetchEvents()
   }, [])
 
-  // Handle event creation success
+  /**
+   * Handles successful event creation
+   * Hides the form and refreshes the events list
+   */
   const handleEventCreated = () => {
     setShowEventForm(false)
     fetchEvents()
@@ -92,14 +127,12 @@ export function CalendarView() {
     })
   }
 
-  // Check if the current user is attending an event
-  const isUserAttending = (event: Event) => {
-    if (!session?.user?.email) return false
-
-    return event.attendeesList?.some((attendee) => attendee.id === session.user?.id && attendee.status === "attending")
-  }
-
-  // Handle event attendance
+  /**
+   * Handles user registration for an event
+   * Requires authentication and makes API call to register
+   *
+   * @param eventId - ID of the event to attend
+   */
   const handleAttendEvent = async (eventId: string) => {
     if (!session?.user) {
       toast({
@@ -140,42 +173,11 @@ export function CalendarView() {
     }
   }
 
-  // Handle removing attendance
-  const handleRemoveAttendance = async (eventId: string) => {
-    if (!session?.user) {
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/events/${eventId}/attend`, {
-        method: "DELETE",
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to remove attendance")
-      }
-
-      toast({
-        title: "Success",
-        description: "You've been removed from this event.",
-      })
-
-      // Refresh events to update attendance count
-      fetchEvents()
-    } catch (error) {
-      console.error("Error removing attendance:", error)
-      toast({
-        title: "Error",
-        description: "Failed to remove you from this event. Please try again.",
-        variant: "destructive",
-      })
-    }
-  }
-
   // Filter events for the selected day
   const selectedDayEvents = events.filter((event) => isSameDay(parseISO(event.date), selectedDay))
 
-  // If not client-side yet, render a simple loading state
+  // If not client-side yet, render a simple loading skeleton
+  // This prevents hydration mismatch errors
   if (!isClient) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
@@ -192,9 +194,12 @@ export function CalendarView() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-7 gap-8 p-4">
+      {/* Main calendar and events section - 5/7 of the grid on medium+ screens */}
       <div className="md:col-span-5">
+        {/* Header with title and Add Event button */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Events Calendar</h2>
+          {/* Only show Add Event button for authenticated users */}
           {session?.user && (
             <Button onClick={() => setShowEventForm(true)} className="bg-green-600 hover:bg-green-700">
               <Plus className="h-4 w-4 mr-2" /> Add Event
@@ -202,6 +207,7 @@ export function CalendarView() {
           )}
         </div>
 
+        {/* Conditional rendering: Show event form or calendar */}
         {showEventForm && session?.user ? (
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <EventForm
@@ -212,6 +218,7 @@ export function CalendarView() {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-md p-4">
+            {/* Calendar component with custom styling and event indicators */}
             <Calendar
               mode="single"
               selected={selectedDay}
@@ -270,6 +277,7 @@ export function CalendarView() {
                 },
               }}
               components={{
+                // Custom day content to show event indicators
                 DayContent: ({ date, displayMonth }) => {
                   const hasEvents = events.some((event) => isSameDay(parseISO(event.date), date))
                   return (
@@ -288,6 +296,7 @@ export function CalendarView() {
           </div>
         )}
 
+        {/* Events list for the selected day */}
         <div className="mt-6 bg-white rounded-lg shadow-md p-4">
           <h3 className="font-medium text-lg mb-4">
             {selectedDayEvents.length > 0
@@ -296,13 +305,16 @@ export function CalendarView() {
           </h3>
 
           <div className="space-y-4">
+            {/* Map through events for the selected day */}
             {selectedDayEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg">{event.title}</CardTitle>
+                    {/* Event type badge */}
                     {event.type && event.typeColor && <Badge className={event.typeColor}>{event.type}</Badge>}
                   </div>
+                  {/* Event location */}
                   {event.location && (
                     <CardDescription className="flex items-center gap-1">
                       <MapPin className="h-3.5 w-3.5" />
@@ -311,37 +323,31 @@ export function CalendarView() {
                   )}
                 </CardHeader>
                 <CardContent className="pb-2">
+                  {/* Event description */}
                   {event.description && <p className="text-sm">{event.description}</p>}
                 </CardContent>
                 <CardFooter className="flex justify-between text-sm text-muted-foreground pt-0">
+                  {/* Event time and duration */}
                   <div className="flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />
                     {format(parseISO(event.date), "h:mm a")}
                     {event.duration && ` (${event.duration} hours)`}
                   </div>
+                  {/* Attendee count */}
                   <div className="flex items-center gap-1">
                     <Users className="h-3.5 w-3.5" />
                     {event.attendees || 0} attendees
                   </div>
                 </CardFooter>
                 <CardFooter className="pt-0">
-                  {isUserAttending(event) ? (
-                    <Button
-                      onClick={() => handleRemoveAttendance(event.id)}
-                      variant="outline"
-                      className="w-full border-red-600 text-red-700 hover:bg-red-50"
-                    >
-                      <X className="h-4 w-4 mr-2" /> Cancel Attendance
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => handleAttendEvent(event.id)}
-                      variant="outline"
-                      className="w-full border-green-600 text-green-700 hover:bg-green-50"
-                    >
-                      {session?.user ? "Attend This Event" : "Sign In to Attend"}
-                    </Button>
-                  )}
+                  {/* Attend event button - changes text based on authentication status */}
+                  <Button
+                    onClick={() => handleAttendEvent(event.id)}
+                    variant="outline"
+                    className="w-full border-green-600 text-green-700 hover:bg-green-50"
+                  >
+                    {session?.user ? "Attend This Event" : "Sign In to Attend"}
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
@@ -349,7 +355,9 @@ export function CalendarView() {
         </div>
       </div>
 
+      {/* Sidebar section - 2/7 of the grid on medium+ screens */}
       <div className="md:col-span-2 space-y-6">
+        {/* Upcoming Events Card */}
         <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Upcoming Events</CardTitle>
@@ -357,6 +365,7 @@ export function CalendarView() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
+              {/* Filter and display upcoming events for the next 30 days */}
               {events
                 .filter((event) => {
                   const eventDate = parseISO(event.date)
@@ -364,14 +373,16 @@ export function CalendarView() {
                   return eventDate > new Date() && eventDate < thirtyDaysFromNow
                 })
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                .slice(0, 5)
+                .slice(0, 5) // Show only the first 5 events
                 .map((event) => (
                   <div key={event.id} className="flex items-start space-x-3">
+                    {/* Date display */}
                     <div className="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-md bg-green-50 text-green-700">
                       <span className="text-xs font-medium">{format(parseISO(event.date), "MMM")}</span>
                       <span className="text-lg font-bold leading-none">{format(parseISO(event.date), "d")}</span>
                     </div>
-                    <div className="flex-1">
+                    {/* Event details */}
+                    <div>
                       <h4 className="text-sm font-medium">{event.title}</h4>
                       {event.location && (
                         <div className="flex items-center text-xs text-muted-foreground mt-1">
@@ -384,21 +395,12 @@ export function CalendarView() {
                         {format(parseISO(event.date), "h:mm a")}
                       </div>
                     </div>
-                    {isUserAttending(event) && (
-                      <Button
-                        onClick={() => handleRemoveAttendance(event.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
                   </div>
                 ))}
             </div>
           </CardContent>
           <CardFooter>
+            {/* Total event count */}
             <div className="text-xs text-muted-foreground flex items-center">
               <CalendarIcon className="h-3.5 w-3.5 mr-1" />
               {events.length} total events in the next 3 months
@@ -406,6 +408,7 @@ export function CalendarView() {
           </CardFooter>
         </Card>
 
+        {/* Event Types Card */}
         <Card className="mt-6 shadow-md">
           <CardHeader>
             <CardTitle>Event Types</CardTitle>
@@ -413,6 +416,7 @@ export function CalendarView() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
+              {/* Static list of event types with counts */}
               {[
                 { type: "Tree Planting", color: "bg-green-100 text-green-800 hover:bg-green-100" },
                 { type: "Forest Restoration", color: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" },

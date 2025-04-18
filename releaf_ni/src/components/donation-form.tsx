@@ -1,25 +1,52 @@
+/**
+ * Donation Form Component
+ *
+ * This component provides a comprehensive donation interface for ReLeaf NI,
+ * allowing users to:
+ * - Make one-time or monthly donations
+ * - Select from preset amounts or enter a custom amount
+ * - Provide their contact information and an optional message
+ * - Submit their donation to be processed
+ *
+ * The form integrates with NextAuth for user authentication and pre-fills
+ * user information when available.
+ */
+
 "use client"
 
+// Type imports
 import type React from "react"
 
+// Next.js hooks
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+
+// React hooks
 import { useState, useEffect } from "react"
+
+// UI components
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+// Icons
 import { Heart, TreeDeciduous } from "lucide-react"
 
 export default function DonationForm() {
+  // Next.js hooks for routing and authentication
   const router = useRouter()
   const { data: session } = useSession()
+
+  // Form state management
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [donationAmount, setDonationAmount] = useState("25")
+  const [donationAmount, setDonationAmount] = useState("25") // Default amount
   const [customAmount, setCustomAmount] = useState("")
-  const [donationType, setDonationType] = useState("one-time")
+  const [donationType, setDonationType] = useState("one-time") // Default to one-time donation
+
+  // Donor information state
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -27,6 +54,10 @@ export default function DonationForm() {
     message: "",
   })
 
+  /**
+   * Pre-fill form with user data if authenticated
+   * Extracts first and last name from the user's full name
+   */
   useEffect(() => {
     if (session?.user) {
       const nameParts = session.user.name ? session.user.name.split(" ") : ["", ""]
@@ -42,6 +73,10 @@ export default function DonationForm() {
     }
   }, [session])
 
+  /**
+   * Handles changes to text input fields
+   * Updates the formData state with the new values
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -50,16 +85,28 @@ export default function DonationForm() {
     }))
   }
 
+  /**
+   * Handles changes to the donation amount radio buttons
+   * Resets the custom amount when a preset amount is selected
+   */
   const handleAmountChange = (value: string) => {
     setDonationAmount(value)
     setCustomAmount("")
   }
 
+  /**
+   * Handles changes to the custom amount input
+   * Sets the donation type to "custom" and updates the custom amount
+   */
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomAmount(e.target.value)
     setDonationAmount("custom")
   }
 
+  /**
+   * Handles form submission
+   * Validates form data, submits to API, and redirects on success
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -88,6 +135,7 @@ export default function DonationForm() {
     }
 
     try {
+      // Submit donation to API
       const response = await fetch("/api/donate", {
         method: "POST",
         headers: {
@@ -101,14 +149,18 @@ export default function DonationForm() {
         const fullName = `${formData.firstName} ${formData.lastName}`
         // Get the final amount (either custom or selected)
         const finalAmount = donationAmount === "custom" ? customAmount : donationAmount
+
+        // Redirect to thank you page with query parameters
         router.push(`/donate/thank-you?name=${encodeURIComponent(fullName)}&amount=${encodeURIComponent(finalAmount)}`)
       } else {
+        // Handle API error response
         const errorData = await response.json().catch(() => ({}))
         console.error("Donation submission failed", errorData)
         alert("There was an error processing your donation. Please try again.")
         setIsSubmitting(false)
       }
     } catch (error) {
+      // Handle network or other errors
       console.error("Error submitting donation:", error)
       alert("There was an error processing your donation. Please try again.")
       setIsSubmitting(false)
@@ -117,6 +169,7 @@ export default function DonationForm() {
 
   return (
     <Card className="w-full max-w-2xl mx-auto border-green-100 shadow-md">
+      {/* Card header with title and description */}
       <CardHeader className="bg-green-50 border-b border-green-100">
         <div className="flex items-center gap-2 mb-2">
           <Heart className="h-5 w-5 text-green-600" />
@@ -126,8 +179,11 @@ export default function DonationForm() {
           Your contribution helps us plant more trees and create a greener Northern Ireland.
         </CardDescription>
       </CardHeader>
+
+      {/* Card content with donation form */}
       <CardContent className="pt-6">
         <form id="donationForm" onSubmit={handleSubmit}>
+          {/* Tabs for donation type selection (one-time vs monthly) */}
           <Tabs defaultValue="one-time" className="w-full mb-6" onValueChange={setDonationType}>
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger
@@ -144,6 +200,7 @@ export default function DonationForm() {
               </TabsTrigger>
             </TabsList>
 
+            {/* One-time donation amount options */}
             <TabsContent value="one-time" className="space-y-6">
               <div>
                 <Label className="text-base font-medium mb-3 block">Select Donation Amount</Label>
@@ -152,6 +209,7 @@ export default function DonationForm() {
                   onValueChange={handleAmountChange}
                   className="grid grid-cols-2 md:grid-cols-4 gap-3"
                 >
+                  {/* Preset amount options */}
                   {["10", "25", "50", "100"].map((amount) => (
                     <div key={amount} className="relative">
                       <RadioGroupItem value={amount} id={`amount-${amount}`} className="peer sr-only" />
@@ -190,6 +248,7 @@ export default function DonationForm() {
               </div>
             </TabsContent>
 
+            {/* Monthly donation amount options */}
             <TabsContent value="monthly" className="space-y-6">
               <div>
                 <Label className="text-base font-medium mb-3 block">Select Monthly Amount</Label>
@@ -198,6 +257,7 @@ export default function DonationForm() {
                   onValueChange={handleAmountChange}
                   className="grid grid-cols-2 md:grid-cols-4 gap-3"
                 >
+                  {/* Preset monthly amount options */}
                   {["5", "10", "20", "50"].map((amount) => (
                     <div key={amount} className="relative">
                       <RadioGroupItem value={amount} id={`monthly-${amount}`} className="peer sr-only" />
@@ -210,7 +270,7 @@ export default function DonationForm() {
                     </div>
                   ))}
 
-                  {/* Custom amount option inside the RadioGroup */}
+                  {/* Custom monthly amount option */}
                   <div className="relative col-span-2 md:col-span-4">
                     <RadioGroupItem value="custom" id="monthly-custom" className="peer sr-only" />
                     <div className="flex items-center">
@@ -237,7 +297,9 @@ export default function DonationForm() {
             </TabsContent>
           </Tabs>
 
+          {/* Donor information form fields */}
           <div className="space-y-4 mt-8">
+            {/* Name fields (first and last name) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
@@ -254,6 +316,8 @@ export default function DonationForm() {
                 <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
               </div>
             </div>
+
+            {/* Email field */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -265,6 +329,8 @@ export default function DonationForm() {
                 required
               />
             </div>
+
+            {/* Optional message field */}
             <div className="space-y-2">
               <Label htmlFor="message">Message (Optional)</Label>
               <textarea
@@ -279,11 +345,16 @@ export default function DonationForm() {
           </div>
         </form>
       </CardContent>
+
+      {/* Card footer with impact message and submit button */}
       <CardFooter className="flex flex-col space-y-4 bg-green-50 border-t border-green-100">
+        {/* Impact message */}
         <div className="flex items-center gap-2 text-sm text-green-700 mb-2">
           <TreeDeciduous className="h-4 w-4" />
           <span>Your donation will help plant native trees across Northern Ireland</span>
         </div>
+
+        {/* Submit button with dynamic text based on selection */}
         <Button
           type="submit"
           form="donationForm"
