@@ -1,14 +1,13 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
 
@@ -33,15 +32,23 @@ export function SignupForm() {
       })
 
       const data = await response.json()
+      console.log("API Response:", { status: response.status, data })
 
       if (!response.ok) {
+        // Handle array of validation errors
+        if (data.errors && Array.isArray(data.errors)) {
+          throw new Error(data.errors.join(", "))
+        }
+        // Handle single error message
         throw new Error(data.message || "Something went wrong")
       }
 
-      // Redirect to sigin page after successful signup
+      // Redirect to signin page after successful signup
       router.push("/signin?registered=true")
     } catch (error) {
+      console.error("Signup error:", error)
       setError(error instanceof Error ? error.message : "Failed to create account")
+    } finally {
       setIsLoading(false)
     }
   }
@@ -81,7 +88,6 @@ export function SignupForm() {
               required
               minLength={8}
             />
-            <p className="text-xs text-muted-foreground">Password must be at least 8 characters long</p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
@@ -99,4 +105,3 @@ export function SignupForm() {
     </Card>
   )
 }
-
