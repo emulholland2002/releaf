@@ -8,12 +8,9 @@
  * @file app/api/events/[id]/attend/route.ts
  */
 
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { PrismaClient } from "@prisma/client";
-
-// Initialize Prisma client for database operations
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth/next"
+import prisma from "@/app/client"
 
 /**
  * Type definitions for better code documentation and type safety

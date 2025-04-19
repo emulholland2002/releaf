@@ -10,10 +10,7 @@
 
 import { NextResponse } from "next/server"
 import { hash } from "bcrypt"
-import { PrismaClient } from "@prisma/client"
-
-// Initialize Prisma client for database operations
-const prisma = new PrismaClient()
+import prisma from "@/app/client"
 
 /**
  * Type definition for registration request data

@@ -8,11 +8,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-// Initialize Prisma client for database operations
-// Using a single instance to avoid connection issues
-const prisma = new PrismaClient();
+import prisma from "@/app/client"
 
 /**
  * Type definition for event type response

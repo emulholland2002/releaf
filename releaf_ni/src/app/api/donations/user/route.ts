@@ -8,10 +8,8 @@
 
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/app/client"
 
-// Initialize Prisma client for database operations
-const prisma = new PrismaClient()
 
 // Define types for better code documentation and type safety
 type DonationRecord = {

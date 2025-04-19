@@ -11,11 +11,8 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/app/client"
 import { compare } from "bcrypt"
-
-// Initialize Prisma client for database operations
-const prisma = new PrismaClient()
 
 /**
  * Validates an email address format

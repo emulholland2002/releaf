@@ -1,12 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { PrismaClient } from "@prisma/client"
-
-/**
- * Prisma client instance for database operations
- * Using a single instance to avoid connection issues
- */
-const prisma = new PrismaClient()
+import prisma from "@/app/client"
 
 /**
  * Donation request body type definition

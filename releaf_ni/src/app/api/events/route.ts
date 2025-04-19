@@ -10,10 +10,7 @@
 
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { PrismaClient } from "@prisma/client" 
-
-// Initialize Prisma client for database operations
-const prisma = new PrismaClient()
+import prisma from "@/app/client"
 
 /**
  * Type definitions for better code documentation and type safety
