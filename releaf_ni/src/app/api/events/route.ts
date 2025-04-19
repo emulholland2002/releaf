@@ -404,3 +404,5 @@ function parseDate(dateString: string | null, defaultValue: Date | null = null):
   const date = new Date(dateString);
   return isNaN(date.getTime()) ? defaultValue : date;
 }
+
+export { validateEventRequest } 

@@ -13,9 +13,7 @@ jest.mock("bcrypt", () => ({
   hash: jest.fn().mockResolvedValue("mocked-hashed-password"),
 }))
 
-// Group related tests under a descriptive name
 describe("User Registration API", () => {
-  // Define a specific test case for the happy path
   it("registers a new user successfully", async () => {
     // Mock Prisma findUnique to return null (user doesn't exist yet)
     prismaMock.user.findUnique.mockResolvedValue(null)
