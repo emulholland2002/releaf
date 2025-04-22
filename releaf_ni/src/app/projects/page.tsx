@@ -1,7 +1,7 @@
 /**
  * Events Calendar Page
  *
- * This page displays a calendar view of afforestation events organized by ReLeaf NI.
+ * This page displays a calendar view of afforestation events organised by ReLeaf NI.
  * It provides users with a way to browse and join upcoming tree planting and
  * forest restoration activities across Northern Ireland.
  */

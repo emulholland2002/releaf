@@ -23,7 +23,7 @@ export default function LearnPage() {
         </p>
       </div>
 
-      {/* Data Visualization Section - Shows historical afforestation trends */}
+      {/* Data Visualisation Section - Shows historical afforestation trends */}
       <div className="flex justify-center mb-12">
         <Card className="mb-12 max-w-4xl mx-auto">
           <CardHeader>

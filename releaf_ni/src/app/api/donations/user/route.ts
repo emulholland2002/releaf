@@ -84,7 +84,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const monthsParam = url.searchParams.get("months")
   
-  // Default to 6 months, but allow customization via query parameter
+  // Default to 6 months, but allow customisation via query parameter
   let months = 6
   
   // Validate months parameter if provided

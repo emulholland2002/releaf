@@ -105,7 +105,7 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    // Sanitize inputs (trim whitespace)
+    // Sanitise inputs (trim whitespace)
     const name = data.name.trim()
     const email = data.email.trim().toLowerCase()
     const { password } = data

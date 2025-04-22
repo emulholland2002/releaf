@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Extract and normalize data
+    // Extract and normalise data
     const { name, email, message = "" } = body
     const amount = Number.parseFloat(body.amount as string)
 

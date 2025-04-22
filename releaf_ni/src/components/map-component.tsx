@@ -36,7 +36,7 @@ const MapComponentClient = () => {
     setIsClient(true)
 
     /**
-     * Initialize the Leaflet map
+     * Initialise the Leaflet map
      * This function dynamically imports Leaflet and sets up the map
      */
     const initializeMap = async () => {
@@ -61,7 +61,7 @@ const MapComponentClient = () => {
         })
       }
 
-      // Initialize map if it doesn't exist yet and the container is available
+      // Initialise map if it doesn't exist yet and the container is available
       if (!mapRef.current && mapContainerRef.current) {
         // Fix Leaflet icon issue
         fixLeafletIcon()
@@ -176,7 +176,7 @@ const MapComponentClient = () => {
       }
     }
 
-    // Initialize the map if we're on the client side
+    // Initialise the map if we're on the client side
     if (isClient) {
       initializeMap()
     }

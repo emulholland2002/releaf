@@ -1,7 +1,7 @@
 /**
  * Home Page Component
  *
- * This is the main landing page for ReLeaf NI, showcasing the organization's mission,
+ * This is the main landing page for ReLeaf NI, showcasing the organisation's mission,
  * key initiatives, and calls to action. It features a hero section with prominent CTAs,
  * a mission statement with feature cards, and a final call to action section.
  */

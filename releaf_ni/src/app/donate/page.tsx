@@ -1,7 +1,7 @@
 /**
  * DonatePage Component
  *
- * This page allows users to make donations to ReLeaf NI, an organization focused on
+ * This page allows users to make donations to ReLeaf NI, an organisation focused on
  * tree planting and environmental restoration in Northern Ireland.
  * It includes a donation form and information about the impact of different donation amounts.
  */
@@ -12,9 +12,9 @@ export default function DonatePage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
-        {/* Header section with organization logo, title and description */}
+        {/* Header section with organisation logo, title and description */}
         <div className="text-center mb-10">
-          {/* Circular leaf icon as the organization's logo */}
+          {/* Circular leaf icon as the organisation's logo */}
           <div className="inline-flex items-center justify-center p-2 bg-green-100 rounded-full mb-4">
             <Leaf className="h-6 w-6 text-green-600" />
           </div>

@@ -1,15 +1,15 @@
 /**
  * AfforestationChart Component
  *
- * This component visualizes Northern Ireland's afforestation trends over time,
+ * This component visualises Northern Ireland's afforestation trends over time,
  * displaying both the annual hectares planted (bar chart) and the cumulative
  * woodland coverage percentage (line chart) in a dual-axis chart.
- * It provides an interactive visualization of reforestation progress.
+ * It provides an interactive visualisation of reforestation progress.
  */
 
 "use client"
 
-// Recharts component imports for chart visualization
+// Recharts component imports for chart visualisation
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Bar } from "recharts"
 
 // Custom UI chart components for styling and tooltips
@@ -88,7 +88,7 @@ export default function AfforestationChart() {
           <YAxis
             yAxisId="right"
             orientation="right"
-            domain={[7.5, 9]} // Custom domain to better visualize small percentage changes
+            domain={[7.5, 9]} // Custom domain to better visualise small percentage changes
             tick={{ fill: "hsl(var(--foreground))" }}
             tickMargin={10}
             label={{

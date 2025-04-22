@@ -132,7 +132,7 @@ const handler = NextAuth({
     signIn: "/signin",
   },
   
-  // Callbacks to customize authentication behavior
+  // Callbacks to customise authentication behavior
   callbacks: {
     /**
      * Session callback to add user ID to the session

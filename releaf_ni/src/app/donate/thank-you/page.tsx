@@ -3,7 +3,7 @@
  *
  * A confirmation page displayed after a successful donation.
  * Features animated elements, confetti celebration effect,
- * and personalized messaging based on URL parameters.
+ * and personalised messaging based on URL parameters.
  */
 "use client"
 
@@ -74,7 +74,7 @@ export default function ThankYouPage() {
             </div>
 
             <CardContent className="px-6 pb-6">
-              {/* Personalized thank you message in a highlighted box */}
+              {/* Personalised thank you message in a highlighted box */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
