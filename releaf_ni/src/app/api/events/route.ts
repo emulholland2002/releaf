@@ -240,7 +240,7 @@ export async function POST(request: Request) {
 
     // Check authentication
     if (!session || !session.user?.email) {
-      console.warn("Unauthorized attempt to create event");
+      console.warn("Unauthorised attempt to create event");
       return NextResponse.json({ 
         error: "Authentication required to create events" 
       }, { status: 401 });

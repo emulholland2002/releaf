@@ -3,7 +3,7 @@
  *
  * This is the main page component for the user dashboard in the ReLeaf NI application.
  * It serves as a container for the UserDashboard component and provides page-level
- * metadata for SEO optimization.
+ * metadata for SEO optimsation.
  */
 import type { Metadata } from "next"
 import UserDashboard from "@/components/user-dashboard"

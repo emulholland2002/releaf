@@ -121,7 +121,7 @@ export default function LearnPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-green-600 font-bold">•</span>
-                  <span>Trees help stabilize soil and prevent erosion, particularly important in hilly regions</span>
+                  <span>Trees help stabilise soil and prevent erosion, particularly important in hilly regions</span>
                 </li>
               </ul>
             </CardContent>
@@ -197,7 +197,7 @@ export default function LearnPage() {
                 <div>
                   <h3 className="font-semibold text-lg">Funding Gaps</h3>
                   <p className="text-muted-foreground">
-                    Despite government schemes, funding remains insufficient to incentivize widespread private landowner
+                    Despite government schemes, funding remains insufficient to incentivise widespread private landowner
                     participation in afforestation.
                   </p>
                 </div>

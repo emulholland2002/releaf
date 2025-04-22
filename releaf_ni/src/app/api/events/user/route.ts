@@ -120,7 +120,7 @@ export async function GET(request: Request) {
 
     // Check authentication
     if (!session || !session.user?.email) {
-      console.warn("Unauthorized attempt to access user activities");
+      console.warn("Unauthorised attempt to access user activities");
       return NextResponse.json({ 
         error: "Authentication required to access activities" 
       }, { status: 401 });

@@ -37,7 +37,7 @@ export default function GrantsPage() {
     },
     {
       title: "Support and Networking",
-      description: "Connect with other organizations and experts for advice and collaboration opportunities.",
+      description: "Connect with other organisations and experts for advice and collaboration opportunities.",
       icon: <Users className="h-8 w-8 text-green-600" />,
       href: "/grants/networking",
       cta: "Connect Now",

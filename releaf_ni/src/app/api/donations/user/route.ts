@@ -52,7 +52,7 @@ function calculateStartDate(monthsBack: number): Date {
 function aggregateDonationsByMonth(donations: DonationRecord[], months: number): Map<string, number> {
   const donationsByMonth = new Map<string, number>()
 
-  // Initialize with all months (even empty ones)
+  // Initialise with all months (even empty ones)
   for (let i = 0; i < months; i++) {
     const date = new Date()
     date.setMonth(date.getMonth() - i)
@@ -104,7 +104,7 @@ export async function GET(request: Request) {
 
     // Check authentication
     if (!session || !session.user?.email) {
-      console.warn("Unauthorized access attempt to donation history")
+      console.warn("Unauthorised access attempt to donation history")
       return NextResponse.json({ 
         error: "Authentication required to access donation history" 
       }, { status: 401 })

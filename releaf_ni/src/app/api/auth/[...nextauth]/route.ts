@@ -59,7 +59,7 @@ const handler = NextAuth({
       },
       
       /**
-       * Authorize function to validate credentials and return a user
+       * Authorise function to validate credentials and return a user
        * 
        * @param credentials The credentials provided by the user
        * @returns The user object if authentication is successful, null otherwise

@@ -64,7 +64,7 @@ async function getAuthenticatedUser(): Promise<{ userId?: string; errorResponse?
     const session = await getServerSession();
     
     if (!session || !session.user?.email) {
-      console.warn("Unauthorized attempt to access attendance API");
+      console.warn("Unauthorised attempt to access attendance API");
       return { 
         errorResponse: NextResponse.json(
           { error: "Authentication required" }, 
