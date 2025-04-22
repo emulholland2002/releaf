@@ -111,9 +111,8 @@ export default function UserDashboard() {
 
     // Scale to 0-100
     const totalPoints = donationPoints + activityPoints
-    const scaledScore = Math.min(Math.round(totalPoints / 10), 100)
 
-    return scaledScore
+    return totalPoints
   }
 
   return (
