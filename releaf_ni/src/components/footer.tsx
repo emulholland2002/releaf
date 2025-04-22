@@ -101,7 +101,7 @@ export function Footer() {
         </div>
 
         {/* Copyright information with dynamically generated year */}
-        <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Your Company. All rights reserved.</p>
+        <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Releaf NI. All rights reserved.</p>
       </div>
     </footer>
   )

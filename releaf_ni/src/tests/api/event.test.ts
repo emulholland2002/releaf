@@ -1,6 +1,6 @@
 // Import NextRequest from next/server to create mock HTTP requests
 import { NextRequest } from "next/server"
-// Import the GET and POST handlers from your events API route
+// Import the GET and POST handlers from events API route
 import { GET, POST, validateEventRequest } from "@/app/api/events/route"
 // Import Jest testing utilities for structuring tests and making assertions
 import { describe, expect, it } from "@jest/globals"

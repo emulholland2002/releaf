@@ -60,7 +60,7 @@ model User {
 /**
  * Donation Model
  * 
- * Represents financial contributions made to the organization.
+ * Represents financial contributions made to the organisation.
  * Donations can be associated with a registered user or made anonymously.
  * 
  * Relations:
@@ -102,11 +102,11 @@ model UserEvent {
 /**
  * Event Model
  * 
- * Represents tree planting events, workshops, or other activities organized by ReLeaf NI.
+ * Represents tree planting events, workshops, or other activities organised by ReLeaf NI.
  * Events have a type, location, date, and can be attended by multiple users.
  * 
  * Relations:
- * - Many-to-one with EventType (categorizes the event)
+ * - Many-to-one with EventType (categorises the event)
  * - Many-to-one with User as creator (who created the event)
  * - Many-to-many with User through UserEvent (users attending the event)
  */
@@ -131,7 +131,7 @@ model Event {
 /**
  * EventType Model
  * 
- * Categorizes events (e.g., Tree Planting, Workshop, Cleanup).
+ * Categorises events (e.g., Tree Planting, Workshop, Cleanup).
  * Includes visual styling information for the UI.
  * 
  * Relations:

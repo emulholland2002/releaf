@@ -31,7 +31,6 @@ type RouteContext = {
  */
 function validateEventId(eventId: string): boolean {
   // Check if the ID is not empty and has a valid format
-  // This validation can be adjusted based on your ID format
   return !!eventId && eventId.trim().length > 0;
 }
 

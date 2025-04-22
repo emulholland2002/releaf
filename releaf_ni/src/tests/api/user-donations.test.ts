@@ -1,6 +1,6 @@
 // Import NextRequest from next/server to create mock HTTP requests
 import { NextRequest } from "next/server"
-// Import the GET handler from your donation history API route
+// Import the GET handler from donation history API route
 import { GET } from "@/app/api/donations/user/route"
 // Import Jest testing utilities for structuring tests and making assertions
 import { describe, expect, it } from "@jest/globals"
