@@ -40,7 +40,7 @@ Northern Ireland has one of the lowest forest cover percentages in Europe (8.6%)
 Clone the repository:
 
 ```bash
-git clone https://github.com/emulholland2002/releaf-ni.git
+git clone https://github.com/emulholland2002/releaf.git
 cd releaf-ni
 ```
 
